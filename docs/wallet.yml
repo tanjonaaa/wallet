@@ -1,0 +1,248 @@
+openapi: '3.0.2'
+info:
+  title: Wallet BudgetBakers
+  version: '1.0'
+servers:
+  - url: https://Wallet/v1
+tags:
+  - Account
+  - Currency
+  - Transaction
+paths:
+  /account:
+    get:
+      tags:
+        - Account
+      summary: Get all accounts
+      description: The returned books are ordered by name.
+      operationId: getAccounts
+      responses:
+        200:
+          description: successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accounts'
+
+    put:
+      summary: Create or update accounts
+      operationId: crupdateAccounts
+      tags:
+        - Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/accounts'
+      responses:
+        200:
+          description: The list of created or updated accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/accounts'
+        '400':
+          $ref: '#/components/responses/400'
+
+  /currency:
+    get:
+      tags:
+        - Currency
+      summary: Get all Currency
+      description: The returned currency are ordered by name.
+      operationId: getCurrency
+      responses:
+        200:
+          description: successfully returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/currency'
+
+    put:
+      summary: Create or update Currency type
+      operationId: crupdateCurrency
+      tags:
+        - Currency
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/currency'
+      responses:
+        200:
+          description: The list of created or updated currency
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/currency'
+        '400':
+          $ref: '#/components/responses/400'
+
+  /transaction:
+    get:
+      tags:
+        - Transaction
+      summary: Get all Transaction
+      description: The returned Transaction are ordered by date.
+      operationId: getTransaction
+      responses:
+        200:
+          description: successfully returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/transaction'
+
+
+    put:
+      summary: Create or update Transaction
+      operationId: crupdateTransaction
+      tags:
+        - Transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/transaction'
+      responses:
+        200:
+          description: The list of created or updated currency
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/transaction'
+        '400':
+          $ref: '#/components/responses/400'
+
+
+components:
+  responses:
+    400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestBody'
+    403:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenBody'
+
+  schemas:
+    ResponseStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: OK
+    ResponseBodyTemplate:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ResponseStatus'
+        body:
+          type: object
+    BadRequestBody:
+      allOf:
+        - $ref: '#/components/schemas/ResponseBodyTemplate'
+      example:
+        status:
+          code: 400
+          message: BAD REQUEST
+        body: { }
+    ForbiddenBody:
+      allOf:
+        - $ref: '#/components/schemas/ResponseBodyTemplate'
+      example:
+        status:
+          code: 403
+          message: FORBIDDEN
+        body: { }
+
+    accounts:
+      type: object
+      properties:
+        account_id:
+          type: string
+        name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        balance:
+          type: number
+        current_id:
+          type: string
+      example:
+        - account_id: "1a2b3c4d-5e6f-7g8h-9i0j"
+          name: "John"
+          last_name: "Doe"
+          email: "john.doe@example.com"
+          password: "hashed_password"
+          balance: 100.50
+          current_id: "cf4575c4-911b-11ee-b9d1-0242ac120002"
+
+    currency:
+      type: object
+      properties:
+        currency_id:
+          type: string
+        name:
+          type: string
+        symbol:
+          type: string
+      example:
+        - currency_id: "cf4575c4-911b-11ee-b9d1-0242ac120002"
+          name: "Euro"
+          symbol: "€"
+
+    transaction:
+      type: object
+      properties:
+        transaction_id:
+          type : string
+        description:
+          type : string
+        amount :
+          type : number
+        transaction_date :
+          type: string
+          format: date
+        account_id :
+          type: string
+      example:
+        - transaction_id: "a8b3a0bf-9121-11ee-b9d1-0242ac120002"
+          description: "Purchase 1"
+          amount: 50.00
+          transaction_date: "2023-01-15"
+          account_id: "1a2b3c4d-5e6f-7g8h-9i0j"
+
+
+
+    
+
