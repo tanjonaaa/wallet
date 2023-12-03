@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: Wallet BudgetBakers
-  version: '1.2'
+  version: '1.3.0'
 servers:
   - url: https://Wallet/v1
 tags:
@@ -80,6 +80,21 @@ paths:
         400:
           $ref: '#/components/responses/400'
 
+  /account/{id}/transactions:
+    get:
+      tags:
+        - Account
+      parameters:
+        - $ref: '#/components/parameters/idParameter'
+      responses:
+        200:
+          description: All the transactions made by the account with the given ID
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/transaction'
   /currency:
     get:
       tags:
