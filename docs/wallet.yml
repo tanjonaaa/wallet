@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: Wallet BudgetBakers
-  version: '1.0'
+  version: '1.1'
 servers:
   - url: https://Wallet/v1
 tags:
@@ -46,6 +46,38 @@ paths:
                 items:
                   $ref: '#/components/schemas/accounts'
         '400':
+          $ref: '#/components/responses/400'
+
+  /account/{id}:
+    get:
+      tags:
+        - Account
+      summary: Get an account by its ID
+      parameters:
+        - $ref: '#/components/parameters/idParameter'
+      responses:
+        200:
+          description: The account with the given Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accounts'
+        400:
+          $ref: '#/components/responses/400'
+    delete:
+      tags:
+        - Account
+      summary: Delete an account by its Id
+      parameters:
+        - $ref: '#/components/parameters/idParameter'
+      responses:
+        200:
+          description: The deleted account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accounts'
+        400:
           $ref: '#/components/responses/400'
 
   /currency:
@@ -242,6 +274,13 @@ components:
           transaction_date: "2023-01-15"
           account_id: "1a2b3c4d-5e6f-7g8h-9i0j"
 
+  parameters:
+    idParameter:
+      in: path
+      name: id
+      schema:
+        type: string
+      required: true
 
 
     
