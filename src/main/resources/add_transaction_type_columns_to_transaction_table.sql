@@ -1,0 +1,1 @@
+ALTER TABLE IF EXISTS transaction ADD COLUMN IF NOT EXISTS transaction_type transaction_type NOT NULL;
