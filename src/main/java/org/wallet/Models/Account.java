@@ -13,7 +13,7 @@ public class Account {
     @NonNull
     private String accountId;
     @NonNull
-    private String balance;
+    private Float balance;
     @NonNull
     private String currencyId;
 }
