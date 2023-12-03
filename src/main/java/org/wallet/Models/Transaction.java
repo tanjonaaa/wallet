@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 
 @AllArgsConstructor
+@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -20,7 +21,6 @@ public class Transaction {
         private Double amount;
         @NonNull
         private LocalDateTime transaction_date;
-        @NonNull
         private String transaction_type;
         @NonNull
         private String account_id;
