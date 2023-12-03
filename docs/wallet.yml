@@ -121,6 +121,38 @@ paths:
         '400':
           $ref: '#/components/responses/400'
 
+  /currency/{id}:
+    get:
+      tags:
+        - Currency
+      summary: Get a currency by its ID
+      parameters:
+        - $ref: '#/components/parameters/idParameter'
+      responses:
+        200:
+          description: The currency with the given Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/currency'
+        400:
+          $ref: '#/components/responses/400'
+    delete:
+      tags:
+        - Currency
+      summary: Delete a currency by its Id
+      parameters:
+        - $ref: '#/components/parameters/idParameter'
+      responses:
+        200:
+          description: The deleted currency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/currency'
+        400:
+          $ref: '#/components/responses/400'
+
   /transaction:
     get:
       tags:
@@ -137,8 +169,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/transaction'
-
-
     put:
       summary: Create or update Transaction
       operationId: crupdateTransaction
@@ -163,6 +193,37 @@ paths:
         '400':
           $ref: '#/components/responses/400'
 
+  /transaction/{id}:
+    get:
+      tags:
+        - Transaction
+      summary: Get a transaction by its ID
+      parameters:
+        - $ref: '#/components/parameters/idParameter'
+      responses:
+        200:
+          description: The transaction with the given Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction'
+        400:
+          $ref: '#/components/responses/400'
+    delete:
+      tags:
+        - Transaction
+      summary: Delete a transaction by its Id
+      parameters:
+        - $ref: '#/components/parameters/idParameter'
+      responses:
+        200:
+          description: The deleted transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction'
+        400:
+          $ref: '#/components/responses/400'
 
 components:
   responses:
