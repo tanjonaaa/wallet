@@ -19,10 +19,9 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
             ResultSet resultSet = statement.executeQuery(sql);
 
             while(resultSet.next()){
-                Currency currency = new Currency();
-                currency.setCurrencyId(resultSet.getString("currency_id"));
-                currency.setName(resultSet.getString("name"));
-                currency.setSymbol(resultSet.getString("symbol"));
+                Currency currency = this.mapResultSet(resultSet);
+
+                currencies.add(currency);
             }
 
             resultSet.close();
@@ -48,22 +47,22 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
 
     @Override
     public Currency save(Currency toSave) {
-        Currency savedCurrency = new Currency();
+        Currency savedCurrency;
         Connection connection = ConnectionDB.getConnection();
 
         String sql = "INSERT INTO \"currency\" (name, symbol) " +
-                "VALUES(?, ?)";
+                "VALUES(?, ?) RETURNING *";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setString(1, toSave.getName());
             statement.setString(2, toSave.getSymbol());
 
-            int affectedRows = statement.executeUpdate();
+            statement.execute();
 
-            if(affectedRows != 0){
-                savedCurrency = toSave;
-            }
+            ResultSet resultSet = statement.getResultSet();
+            resultSet.next();
+            savedCurrency = mapResultSet(resultSet);
 
             statement.close();
             connection.close();
@@ -77,20 +76,20 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
 
     @Override
     public Currency delete(Currency toDelete) {
-        Currency deletedCurrency = new Currency();
+        Currency deletedCurrency;
         Connection connection = ConnectionDB.getConnection();
 
         try {
-            String sql = "DELETE FROM \"currency\" WHERE id = ?";
+            String sql = "DELETE FROM \"currency\" WHERE currency_id = ? RETURNING *";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setString(1, toDelete.getCurrencyId());
 
-            int affectedRows = statement.executeUpdate();
+            statement.execute();
 
-            if(affectedRows != 0){
-                deletedCurrency = toDelete;
-            }
+            ResultSet resultSet = statement.getResultSet();
+            resultSet.next();
+            deletedCurrency = mapResultSet(resultSet);
 
             statement.close();
             connection.close();
@@ -99,5 +98,14 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
         }
 
         return deletedCurrency;
+    }
+
+    private Currency mapResultSet(ResultSet resultSet) throws SQLException {
+        Currency currency = new Currency();
+        currency.setCurrencyId(resultSet.getString("currency_id"));
+        currency.setName(resultSet.getString("name"));
+        currency.setSymbol(resultSet.getString("symbol"));
+
+        return currency;
     }
 }
