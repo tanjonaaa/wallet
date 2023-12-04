@@ -3,14 +3,13 @@ package org.wallet.Models;
 import lombok.*;
 
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 @ToString
 @EqualsAndHashCode
 @Getter
 @Setter
 public class Account {
-    @NonNull
     private String accountId;
     @NonNull
     private Float balance;

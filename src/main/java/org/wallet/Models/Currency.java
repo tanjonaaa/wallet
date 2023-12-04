@@ -3,14 +3,13 @@ package org.wallet.Models;
 import lombok.*;
 
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 @ToString
 @EqualsAndHashCode
 @Getter
 @Setter
 public class Currency {
-    @NonNull
     private String currencyId;
     @NonNull
     private String name;
