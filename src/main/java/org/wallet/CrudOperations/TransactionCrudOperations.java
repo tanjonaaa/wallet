@@ -20,7 +20,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
             ResultSet resultSet = statement.executeQuery(sql);
 
             while(resultSet.next()){
-                Transaction transaction = extractAuthorFromResultSet(resultSet);
+                Transaction transaction = mapResultSet(resultSet);
                 transactions.add(transaction);
             }
 
@@ -44,11 +44,11 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
 
     @Override
     public Transaction save(Transaction toSave) {
-        Transaction saved = new Transaction();
+        Transaction saved;
         try {
             Connection connection = org.wallet.connectionDB.ConnectionDB.getConnection();
             String sql = "INSERT INTO transaction ( description,  amount, account_id,transaction_type) " +
-                    "VALUES (?, ?,?, CAST(? AS transaction_type))";
+                    "VALUES (?, ?,?, CAST(? AS transaction_type)) RETURNING *";
 
             PreparedStatement statement = connection.prepareStatement(sql);
 
@@ -57,11 +57,11 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
             statement.setString(3, toSave.getAccount_id());
             statement.setString(4, toSave.getTransaction_type());
 
-            int row = statement.executeUpdate();
+            statement.execute();
 
-            if(row != 0){
-                saved = toSave;
-            }
+            ResultSet resultSet = statement.getResultSet();
+            resultSet.next();
+            saved = this.mapResultSet(resultSet);
 
             statement.close();
         } catch (SQLException e) {
@@ -72,20 +72,20 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
 
     @Override
     public Transaction delete(Transaction toDelete) {
-        Transaction deleted = new Transaction();
+        Transaction deleted;
         try {
             Connection connection = org.wallet.connectionDB.ConnectionDB.getConnection();
-            String sql = "DELETE FROM transaction WHERE id = ?";
+            String sql = "DELETE FROM transaction WHERE transaction_id = ? RETURNING *";
 
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setString(1, toDelete.getTransaction_id());
 
-            int row = statement.executeUpdate();
+            statement.execute();
 
-            if(row != 0){
-                deleted = toDelete;
-            }
+            ResultSet resultSet = statement.getResultSet();
+            resultSet.next();
+            deleted = mapResultSet(resultSet);
 
             statement.close();
         } catch (SQLException e) {
@@ -94,7 +94,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
         return deleted;
     }
 
-    private Transaction extractAuthorFromResultSet(ResultSet resultSet) throws SQLException {
+    private Transaction mapResultSet(ResultSet resultSet) throws SQLException {
         String transaction_id = resultSet.getString("transaction_id");
         String description = resultSet.getString("description");
         Double amount = resultSet.getDouble("amount");
