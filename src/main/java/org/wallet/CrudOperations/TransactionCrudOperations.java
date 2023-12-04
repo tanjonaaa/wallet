@@ -20,7 +20,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
             ResultSet resultSet = statement.executeQuery(sql);
 
             while(resultSet.next()){
-                Transaction transaction = extractAuthorFromResultSet(resultSet);
+                Transaction transaction = mapResultSet(resultSet);
                 transactions.add(transaction);
             }
 
@@ -61,7 +61,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
 
             ResultSet resultSet = statement.getResultSet();
             resultSet.next();
-            saved = this.extractAuthorFromResultSet(resultSet);
+            saved = this.mapResultSet(resultSet);
 
             statement.close();
         } catch (SQLException e) {
@@ -75,7 +75,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
         Transaction deleted;
         try {
             Connection connection = org.wallet.connectionDB.ConnectionDB.getConnection();
-            String sql = "DELETE FROM transaction WHERE transaction_id = ?";
+            String sql = "DELETE FROM transaction WHERE transaction_id = ? RETURNING *";
 
             PreparedStatement statement = connection.prepareStatement(sql);
 
@@ -85,7 +85,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
 
             ResultSet resultSet = statement.getResultSet();
             resultSet.next();
-            deleted = extractAuthorFromResultSet(resultSet);
+            deleted = mapResultSet(resultSet);
 
             statement.close();
         } catch (SQLException e) {
@@ -94,7 +94,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
         return deleted;
     }
 
-    private Transaction extractAuthorFromResultSet(ResultSet resultSet) throws SQLException {
+    private Transaction mapResultSet(ResultSet resultSet) throws SQLException {
         String transaction_id = resultSet.getString("transaction_id");
         String description = resultSet.getString("description");
         Double amount = resultSet.getDouble("amount");
