@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS transaction (
     description varchar(255) not null,
     amount float not null,
     transaction_date timestamp default CURRENT_TIMESTAMP,
-    transaction_type transaction_type not null,
     account_id varchar(255) references account(account_id)
     );
 
