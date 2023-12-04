@@ -19,10 +19,9 @@ public class AccountCrudOperations implements CrudOperations<Account> {
             ResultSet resultSet = statement.executeQuery(sql);
 
             while(resultSet.next()){
-                Account account = new Account();
-                account.setAccountId(resultSet.getString("account_id"));
-                account.setBalance(resultSet.getFloat("balance"));
-                account.setCurrencyId(resultSet.getString("currency_id"));
+                Account account = mapResultSet(resultSet);
+
+                accounts.add(account);
             }
 
             resultSet.close();
@@ -48,22 +47,22 @@ public class AccountCrudOperations implements CrudOperations<Account> {
 
     @Override
     public Account save(Account toSave) {
-        Account savedAccount = new Account();
+        Account savedAccount;
         Connection connection = ConnectionDB.getConnection();
 
         String sql = "INSERT INTO \"account\" (balance, currency_id) " +
-                "VALUES(?, ?)";
+                "VALUES(?, ?) RETURNING *";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setFloat(1, toSave.getBalance());
             statement.setString(2, toSave.getCurrencyId());
 
-            int affectedRows = statement.executeUpdate();
+            statement.execute();
 
-            if(affectedRows != 0){
-                savedAccount = toSave;
-            }
+            ResultSet resultSet = statement.getResultSet();
+            resultSet.next();
+            savedAccount = mapResultSet(resultSet);
 
             statement.close();
             connection.close();
@@ -77,20 +76,20 @@ public class AccountCrudOperations implements CrudOperations<Account> {
 
     @Override
     public Account delete(Account toDelete) {
-        Account deletedAccount = new Account();
+        Account deletedAccount;
         Connection connection = ConnectionDB.getConnection();
 
         try {
-            String sql = "DELETE FROM \"account\" WHERE id = ?";
+            String sql = "DELETE FROM \"account\" WHERE account_id = ? RETURNING *";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setString(1, toDelete.getAccountId());
 
-            int affectedRows = statement.executeUpdate();
+            statement.execute();
 
-            if(affectedRows != 0){
-                deletedAccount = toDelete;
-            }
+            ResultSet resultSet = statement.getResultSet();
+            resultSet.next();
+            deletedAccount = mapResultSet(resultSet);
 
             statement.close();
             connection.close();
@@ -99,5 +98,14 @@ public class AccountCrudOperations implements CrudOperations<Account> {
         }
 
         return deletedAccount;
+    }
+
+    private Account mapResultSet(ResultSet resultSet) throws SQLException {
+        Account account = new Account();
+        account.setAccountId(resultSet.getString("account_id"));
+        account.setBalance(resultSet.getFloat("balance"));
+        account.setCurrencyId(resultSet.getString("currency_id"));
+
+        return account;
     }
 }
