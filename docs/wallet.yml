@@ -5,9 +5,9 @@ info:
 servers:
   - url: https://Wallet/v1
 tags:
-  - Account
-  - Currency
-  - Transaction
+  - name: Account
+  - name: Currency
+  - name: Transaction
 paths:
   /account:
     get:
@@ -35,7 +35,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/accounts'
+                $ref: '#/components/schemas/AccountInput'
       responses:
         200:
           description: The list of created or updated accounts
@@ -123,7 +123,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/currency'
+                $ref: '#/components/schemas/CurrencyInput'
       responses:
         200:
           description: The list of created or updated currency
@@ -292,54 +292,114 @@ components:
     accounts:
       type: object
       properties:
-        account_id:
+        accountId:
+          type: string
+        name:
           type: string
         balance:
-          type: number
+          type: object
+          properties:
+            amount:
+              type: number
+            lastUpdate:
+              type: string
+              format: date-time
+        transactionsList:
+          type: array
+          items:
+            $ref: '#/components/schemas/transaction'
         currency:
           $ref: '#/components/schemas/currency'
-      example:
-        - account_id: "1a2b3c4d-5e6f-7g8h-9i0j"
-          balance: 100.50
-          currency:
-            currency_id: "cf4575c4-911b-11ee-b9d1-0242ac120002"
-            name: "Euro"
-            symbol: "€"
+        type:
+          type: string
+          enum:
+            - Bank
+            - Cash
+            - Mobile Money
+    AccountInput:
+      type: object
+      properties:
+        name:
+          type: string
+        balance:
+          type: object
+          properties:
+            amount:
+              type: number
+            lastUpdate:
+              type: string
+              format: date-time
+        currency:
+          $ref: '#/components/schemas/currency'
+        type:
+          type: string
+          enum:
+            - Banque
+            - Espèce
+            - Mobile Money
 
     currency:
       type: object
       properties:
-        currency_id:
+        currencyId:
           type: string
         name:
           type: string
-        symbol:
+          enum:
+            - Euro
+            - Ariary
+        code:
           type: string
-      example:
-        - currency_id: "cf4575c4-911b-11ee-b9d1-0242ac120002"
-          name: "Euro"
-          symbol: "€"
+          enum:
+            - EUR
+            - MGA
+    CurrencyInput:
+      type: object
+      properties:
+        name:
+          type: string
+          enum:
+            - Euro
+            - Ariary
+        code:
+          type: string
+          enum:
+            - EUR
+            - MGA
 
     transaction:
       type: object
       properties:
-        transaction_id:
+        transactionId:
           type : string
-        description:
+        label:
           type : string
         amount :
           type : number
-        transaction_date :
+        transactionDate :
           type: string
-          format: date
-        account_id :
+          format: date-time
+        transactionType:
           type: string
-      example:
-        - transaction_id: "a8b3a0bf-9121-11ee-b9d1-0242ac120002"
-          description: "Purchase 1"
-          amount: 50.00
-          transaction_date: "2023-01-15"
-          account_id: "1a2b3c4d-5e6f-7g8h-9i0j"
+          enum:
+            - debit
+            - credit
+    TransactionInput:
+      type: object
+      properties:
+        label:
+          type: string
+        amount:
+          type: number
+        transactionDate:
+          type: string
+          format: date-time
+        transactionType:
+          type: string
+          enum:
+            - debit
+            - credit
+
 
   parameters:
     idParameter:
