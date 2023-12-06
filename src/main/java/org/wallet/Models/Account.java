@@ -12,7 +12,7 @@ import lombok.*;
 public class Account {
     private String accountId;
     @NonNull
-    private Float balance;
+    private Double balance;
     @NonNull
     private String currencyId;
 }
