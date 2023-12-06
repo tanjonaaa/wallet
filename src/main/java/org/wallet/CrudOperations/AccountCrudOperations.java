@@ -54,7 +54,7 @@ public class AccountCrudOperations implements CrudOperations<Account> {
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
 
-            statement.setFloat(1, toSave.getBalance());
+            statement.setDouble(1, toSave.getBalance());
             statement.setString(2, toSave.getCurrencyId());
 
             statement.execute();
@@ -102,7 +102,7 @@ public class AccountCrudOperations implements CrudOperations<Account> {
     private Account mapResultSet(ResultSet resultSet) throws SQLException {
         Account account = new Account();
         account.setAccountId(resultSet.getString("account_id"));
-        account.setBalance(resultSet.getFloat("balance"));
+        account.setBalance(resultSet.getDouble("balance"));
         account.setCurrencyId(resultSet.getString("currency_id"));
 
         return account;
