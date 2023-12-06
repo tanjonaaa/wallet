@@ -44,7 +44,6 @@ public class AccountCrudOperations implements CrudOperations<Account> {
 
         return savedAccounts;
     }
-
     @Override
     public Account save(Account toSave) {
         Account savedAccount;
