@@ -297,13 +297,7 @@ components:
         name:
           type: string
         balance:
-          type: object
-          properties:
-            amount:
-              type: number
-            lastUpdate:
-              type: string
-              format: date-time
+          $ref: '#/components/schemas/balance'
         transactionsList:
           type: array
           items:
@@ -399,6 +393,14 @@ components:
           enum:
             - debit
             - credit
+    balance:
+      type: object
+      properties:
+        amount:
+          type: number
+        lastUpdate:
+          type: string
+          format: date-time
 
 
   parameters:
@@ -408,6 +410,7 @@ components:
       schema:
         type: string
       required: true
+
 
 
     
