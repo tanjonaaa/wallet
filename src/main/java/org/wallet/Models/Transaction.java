@@ -14,14 +14,14 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode
 public class Transaction {
-        private String transaction_id;
+        private String transactionId;
         @NonNull
         private String description;
         @NonNull
         private Double amount;
         @NonNull
-        private LocalDateTime transaction_date;
-        private String transaction_type;
+        private LocalDateTime transactionDate;
+        private String transactionType;
         @NonNull
-        private String account_id;
+        private String accountId;
 }
