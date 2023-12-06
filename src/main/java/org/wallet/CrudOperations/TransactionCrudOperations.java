@@ -3,7 +3,6 @@ package org.wallet.CrudOperations;
 import org.wallet.Models.Transaction;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,23 +44,37 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
     @Override
     public Transaction save(Transaction toSave) {
         Transaction saved;
+
+        String sql;
+        if(toSave.getTransactionId() == null){
+            sql = "INSERT INTO transaction ( description,  amount, account_id,transaction_type) " +
+                    "VALUES (?, ?, ?, CAST(? AS transaction_type)) RETURNING *";
+        }else {
+            sql = "UPDATE transaction " +
+                    "SET description = ?,  amount = ?, account_id = ?, transaction_type = CAST(? AS transaction_type)" +
+                    " WHERE transaction_id = ? RETURNING *";
+        }
+
+
         try {
             Connection connection = org.wallet.connectionDB.ConnectionDB.getConnection();
-            String sql = "INSERT INTO transaction ( description,  amount, account_id,transaction_type) " +
-                    "VALUES (?, ?,?, CAST(? AS transaction_type)) RETURNING *";
 
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setString(1, toSave.getDescription());
             statement.setObject(2, toSave.getAmount());
-            statement.setString(3, toSave.getAccount_id());
-            statement.setString(4, toSave.getTransaction_type());
+            statement.setString(3, toSave.getAccountId());
+            statement.setString(4, toSave.getTransactionType());
+
+            if(toSave.getTransactionId() != null){
+                statement.setString(5, toSave.getTransactionId());
+            }
 
             statement.execute();
 
             ResultSet resultSet = statement.getResultSet();
             resultSet.next();
-            saved = this.mapResultSet(resultSet);
+            saved = mapResultSet(resultSet);
 
             statement.close();
         } catch (SQLException e) {
@@ -79,7 +92,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
 
             PreparedStatement statement = connection.prepareStatement(sql);
 
-            statement.setString(1, toDelete.getTransaction_id());
+            statement.setString(1, toDelete.getTransactionId());
 
             statement.execute();
 
@@ -95,15 +108,15 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
     }
 
     private Transaction mapResultSet(ResultSet resultSet) throws SQLException {
-        String transaction_id = resultSet.getString("transaction_id");
-        String description = resultSet.getString("description");
-        Double amount = resultSet.getDouble("amount");
-        LocalDateTime transaction_date= resultSet.getTimestamp("transaction_date").toLocalDateTime();
-        String transaction_type = resultSet.getString("transaction_type");
-        String account_id = resultSet.getString("account_id");
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId(resultSet.getString("transaction_id"));
+        transaction.setDescription(resultSet.getString("description"));
+        transaction.setAmount(resultSet.getDouble("amount"));
+        transaction.setTransactionDate(resultSet.getTimestamp("transaction_date").toLocalDateTime());
+        transaction.setTransactionType(resultSet.getString("transaction_type"));
+        transaction.setAccountId(resultSet.getString("account_id"));
 
-        return new Transaction(transaction_id,description,amount,transaction_date,transaction_type,account_id);
-
+        return transaction;
     }
 
 }
