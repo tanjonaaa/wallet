@@ -38,7 +38,7 @@ public class TransactionCrudOperationsTest {
 
         // Test save operation
         Transaction savedTransaction = crudOperations.save(transaction);
-        assertNotNull(savedTransaction.getTransaction_id()); // Ensure that the saved transaction has an ID
+        assertNotNull(savedTransaction.getTransactionId()); // Ensure that the saved transaction has an ID
     }
 
     @Test

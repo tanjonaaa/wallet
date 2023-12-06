@@ -50,13 +50,26 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
         Currency savedCurrency;
         Connection connection = ConnectionDB.getConnection();
 
-        String sql = "INSERT INTO \"currency\" (name, symbol) " +
-                "VALUES(?, ?) RETURNING *";
+        String sql;
+
+        if(toSave.getCurrencyId() == null){
+            sql = "INSERT INTO \"currency\" (name, symbol) " +
+                    "VALUES(?, ?) RETURNING *";
+        }else{
+            sql = "UPDATE \"currency\" " +
+                    "SET name = ?, symbol = ? " +
+                    "WHERE currency_id = ? RETURNING *";
+        }
+
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setString(1, toSave.getName());
             statement.setString(2, toSave.getSymbol());
+
+            if(toSave.getCurrencyId() != null){
+                statement.setString(3, toSave.getCurrencyId());
+            }
 
             statement.execute();
 
