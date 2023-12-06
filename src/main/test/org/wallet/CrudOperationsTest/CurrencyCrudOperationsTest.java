@@ -37,6 +37,13 @@ public class CurrencyCrudOperationsTest {
     }
 
     @Test
+    public void testSaveWhenProvidingId() {
+        Currency currency = new Currency("b123533a-2b0d-4ce5-81a2-caf078ba35fe", "Euro", "EUR");
+        Currency savedCurrency = crudOperations.save(currency);
+        Assertions.assertEquals(savedCurrency.getCurrencyId(), currency.getCurrencyId()); // Ensure that the saved currency has an ID
+    }
+
+    @Test
     public void testFindAll() {
         // Test findAll operation
         List<Currency> currencies = crudOperations.findAll();

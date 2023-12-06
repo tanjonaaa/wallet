@@ -49,13 +49,26 @@ public class AccountCrudOperations implements CrudOperations<Account> {
         Account savedAccount;
         Connection connection = ConnectionDB.getConnection();
 
-        String sql = "INSERT INTO \"account\" (balance, currency_id) " +
-                "VALUES(?, ?) RETURNING *";
+        String sql;
+
+        if(toSave.getAccountId() == null){
+            sql = "INSERT INTO \"account\" (balance, currency_id) " +
+                    "VALUES(?, ?) RETURNING *";
+        }else {
+            sql = "UPDATE \"account\" " +
+                    "SET balance = ?, currency_id = ? " +
+                    "WHERE account_id = ? RETURNING *";
+        }
+
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setDouble(1, toSave.getBalance());
             statement.setString(2, toSave.getCurrencyId());
+
+            if(toSave.getAccountId() != null){
+                statement.setString(3, toSave.getAccountId());
+            }
 
             statement.execute();
 
