@@ -10,5 +10,5 @@ import lombok.*;
 public class CurrencyComponent {
     private String currencyId;
     private String name;
-    private String symbol;
+    private String code;
 }
