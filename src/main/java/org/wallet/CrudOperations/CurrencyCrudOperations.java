@@ -10,7 +10,7 @@ import java.util.List;
 public class CurrencyCrudOperations implements CrudOperations<Currency> {
     public static final String CURRENCY_ID_COLUMN = "currency_id";
     public static final String NAME_COLUMN = "name";
-    public static final String CODE_COLUMN = "symbol";
+    public static final String CODE_COLUMN = "code";
     @Override
     public List<Currency> findAll() {
         List<Currency> currencies = new ArrayList<>();
