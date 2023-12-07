@@ -7,6 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionCrudOperations implements CrudOperations<Transaction> {
+    public static final String TRANSACTION_ID_COLUMN = "transaction_id";
+    public static final String DESCRIPTION_COLUMN = "description";
+    public static final String AMOUNT_COLUMN = "amount";
+    public static final String TRANSACTION_DATE_COLUMN = "transaction_date";
+    public static final String TRANSACTION_TYPE_COLUMN = "transaction_type";
+    public static final String ACCOUNT_ID_COLUMN = "account_id";
+
+
+
 
     @Override
     public List<Transaction> findAll() {
@@ -109,12 +118,12 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
 
     private Transaction mapResultSet(ResultSet resultSet) throws SQLException {
         Transaction transaction = new Transaction();
-        transaction.setTransactionId(resultSet.getString("transaction_id"));
-        transaction.setDescription(resultSet.getString("description"));
-        transaction.setAmount(resultSet.getDouble("amount"));
-        transaction.setTransactionDate(resultSet.getTimestamp("transaction_date").toLocalDateTime());
-        transaction.setTransactionType(resultSet.getString("transaction_type"));
-        transaction.setAccountId(resultSet.getString("account_id"));
+        transaction.setTransactionId(resultSet.getString(TRANSACTION_ID_COLUMN));
+        transaction.setDescription(resultSet.getString(DESCRIPTION_COLUMN));
+        transaction.setAmount(resultSet.getDouble(AMOUNT_COLUMN));
+        transaction.setTransactionDate(resultSet.getTimestamp(TRANSACTION_DATE_COLUMN).toLocalDateTime());
+        transaction.setTransactionType(resultSet.getString(TRANSACTION_TYPE_COLUMN));
+        transaction.setAccountId(resultSet.getString(ACCOUNT_ID_COLUMN));
 
         return transaction;
     }
