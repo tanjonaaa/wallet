@@ -10,7 +10,7 @@ import java.util.List;
 public class CurrencyCrudOperations implements CrudOperations<Currency> {
     public static final String CURRENCY_ID_COLUMN = "currency_id";
     public static final String NAME_COLUMN = "name";
-    public static final String SYMBOL_COLUMN = "symbol";
+    public static final String CODE_COLUMN = "symbol";
     @Override
     public List<Currency> findAll() {
         List<Currency> currencies = new ArrayList<>();
@@ -68,7 +68,7 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setString(1, toSave.getName());
-            statement.setString(2, toSave.getSymbol());
+            statement.setString(2, toSave.getCode());
 
             if(toSave.getCurrencyId() != null){
                 statement.setString(3, toSave.getCurrencyId());
@@ -120,7 +120,7 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
         Currency currency = new Currency();
         currency.setCurrencyId(resultSet.getString(CURRENCY_ID_COLUMN));
         currency.setName(resultSet.getString(NAME_COLUMN));
-        currency.setSymbol(resultSet.getString(SYMBOL_COLUMN));
+        currency.setCode(resultSet.getString(CODE_COLUMN));
 
         return currency;
     }
