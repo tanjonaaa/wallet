@@ -16,11 +16,7 @@ public class Account {
     @NonNull
     private String name;
     @NonNull
-    private Double balance;
-    @NonNull
     private String currencyId;
-    @NonNull
-    private List<Transaction> transactionList;
     @NonNull
     private String accountType;
 }
