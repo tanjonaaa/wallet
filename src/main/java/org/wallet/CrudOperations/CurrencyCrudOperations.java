@@ -56,11 +56,11 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
         String sql;
 
         if(toSave.getCurrencyId() == null){
-            sql = "INSERT INTO \"currency\" (name, symbol) " +
-                    "VALUES(?, ?) RETURNING *";
+            sql = "INSERT INTO \"currency\" (name, code) " +
+                    "VALUES(?, CAST(? AS currency_code)) RETURNING *";
         }else{
             sql = "UPDATE \"currency\" " +
-                    "SET name = ?, symbol = ? " +
+                    "SET name = ?, code = CAST(? AS currency_code) " +
                     "WHERE currency_id = ? RETURNING *";
         }
 
