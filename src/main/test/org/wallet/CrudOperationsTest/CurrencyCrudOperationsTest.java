@@ -29,7 +29,7 @@ public class CurrencyCrudOperationsTest {
     public void testSave() {
         Currency currency = new Currency();
         currency.setName("TestCurrency");
-        currency.setSymbol("TST");
+        currency.setCode("MGA");
 
         // Test save operation
         Currency savedCurrency = crudOperations.save(currency);
@@ -56,11 +56,11 @@ public class CurrencyCrudOperationsTest {
         List<Currency> currenciesToSave = new ArrayList<>();
         Currency currency1 = new Currency();
         currency1.setName("TestCurrency1");
-        currency1.setSymbol("TST1");
+        currency1.setCode("MGA");
 
         Currency currency2 = new Currency();
         currency2.setName("TestCurrency2");
-        currency2.setSymbol("TST2");
+        currency2.setCode("MGA");
 
         currenciesToSave.add(currency1);
         currenciesToSave.add(currency2);
@@ -76,7 +76,7 @@ public class CurrencyCrudOperationsTest {
     public void testDelete() {
         Currency currency = new Currency();
         currency.setName("TestCurrency");
-        currency.setSymbol("TST");
+        currency.setCode("MGA");
 
         // Save the currency first
         Currency savedCurrency = crudOperations.save(currency);
