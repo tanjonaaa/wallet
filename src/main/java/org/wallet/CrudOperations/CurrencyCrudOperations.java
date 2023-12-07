@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CurrencyCrudOperations implements CrudOperations<Currency> {
+    public static final String CURRENCY_ID_COLUMN = "currency_id";
+    public static final String NAME_COLUMN = "name";
+    public static final String SYMBOL_COLUMN = "symbol";
     @Override
     public List<Currency> findAll() {
         List<Currency> currencies = new ArrayList<>();
@@ -115,9 +118,9 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
 
     private Currency mapResultSet(ResultSet resultSet) throws SQLException {
         Currency currency = new Currency();
-        currency.setCurrencyId(resultSet.getString("currency_id"));
-        currency.setName(resultSet.getString("name"));
-        currency.setSymbol(resultSet.getString("symbol"));
+        currency.setCurrencyId(resultSet.getString(CURRENCY_ID_COLUMN));
+        currency.setName(resultSet.getString(NAME_COLUMN));
+        currency.setSymbol(resultSet.getString(SYMBOL_COLUMN));
 
         return currency;
     }

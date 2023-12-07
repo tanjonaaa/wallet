@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AccountCrudOperations implements CrudOperations<Account> {
+    public static final String ACCOUNT_ID_COLUMN = "account_id";
+    public static final String BALANCE_COLUMN = "balance";
+    public static final String CURRENCY_ID_COLUMN = "currency_id";
     @Override
     public List<Account> findAll() {
         List<Account> accounts = new ArrayList<>();
@@ -114,9 +117,9 @@ public class AccountCrudOperations implements CrudOperations<Account> {
 
     private Account mapResultSet(ResultSet resultSet) throws SQLException {
         Account account = new Account();
-        account.setAccountId(resultSet.getString("account_id"));
-        account.setBalance(resultSet.getDouble("balance"));
-        account.setCurrencyId(resultSet.getString("currency_id"));
+        account.setAccountId(resultSet.getString(ACCOUNT_ID_COLUMN));
+        account.setBalance(resultSet.getDouble(BALANCE_COLUMN));
+        account.setCurrencyId(resultSet.getString(CURRENCY_ID_COLUMN));
 
         return account;
     }
