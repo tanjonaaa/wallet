@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.wallet.CrudOperations.AccountCrudOperations;
 import org.wallet.Models.Account;
 
+import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,7 +20,7 @@ public class AccountCrudOperationsTest {
 
     @Test
     public void testSave() {
-        Account account = new Account(100.0, "ae98f277-2c9f-49af-a1cc-3fddef7f8caa");
+        Account account = new Account("Compte courant", 100.0, "ae98f277-2c9f-49af-a1cc-3fddef7f8caa", new ArrayList<>(), "Cash");
 
         // Test save operation
         Account savedAccount = crudOperations.save(account);
@@ -36,8 +37,8 @@ public class AccountCrudOperationsTest {
 
     @Test
     public void testSaveAll() {
-        Account account1 = new Account(200.0, "ae98f277-2c9f-49af-a1cc-3fddef7f8caa");
-        Account account2 = new Account(300.0, "ae98f277-2c9f-49af-a1cc-3fddef7f8caa");
+        Account account1 = new Account("Compte courant", 100.0, "ae98f277-2c9f-49af-a1cc-3fddef7f8caa", new ArrayList<>(), "Cash");
+        Account account2 = new Account("Compte courant", 200.0, "ae98f277-2c9f-49af-a1cc-3fddef7f8caa", new ArrayList<>(), "Bank");
 
         List<Account> accountsToSave = List.of(account1, account2);
 
@@ -50,7 +51,7 @@ public class AccountCrudOperationsTest {
 
     @Test
     public void testDelete() {
-        Account account = new Account(100.0, "ae98f277-2c9f-49af-a1cc-3fddef7f8caa");
+        Account account = new Account("Compte courant", 100.0, "ae98f277-2c9f-49af-a1cc-3fddef7f8caa", new ArrayList<>(), "Cash");
 
         // Save the account first
         Account savedAccount = crudOperations.save(account);

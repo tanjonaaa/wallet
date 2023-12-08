@@ -27,6 +27,7 @@ public class TransactionCrudOperationsTest {
 
     @Test
     public void testSave() {
+        Transaction test = new Transaction()
         Transaction transaction = new Transaction(
                 "123456",
                 "Test Transaction",
@@ -51,27 +52,24 @@ public class TransactionCrudOperationsTest {
 
     @Test
     public void testSaveAll() {
-        List<Transaction> transactionsToSave = new ArrayList<>();
-        Transaction transaction1 = new Transaction(
-                "123456",
-                "Test Transaction 1",
-                100.0,
-                LocalDateTime.now(),
-                "income",
-                "1624c5be-911f-11ee-b9d1-0242ac120002"
+        List<Transaction> transactionsToSave = List.of(
+                new Transaction(
+                        "123456",
+                        "Test Transaction 1",
+                        100.0,
+                        LocalDateTime.now(),
+                        "income",
+                        "1624c5be-911f-11ee-b9d1-0242ac120002"
+                ),
+                new Transaction(
+                        "789012",
+                        "Test Transaction 2",
+                        200.0,
+                        LocalDateTime.now(),
+                        "expense",
+                        "1624c5be-911f-11ee-b9d1-0242ac120002"
+                )
         );
-
-        Transaction transaction2 = new Transaction(
-                "789012",
-                "Test Transaction 2",
-                200.0,
-                LocalDateTime.now(),
-                "expense",
-                "1624c5be-911f-11ee-b9d1-0242ac120002"
-        );
-
-        transactionsToSave.add(transaction1);
-        transactionsToSave.add(transaction2);
 
         // Test saveAll operation
         List<Transaction> savedTransactions = crudOperations.saveAll(transactionsToSave);
