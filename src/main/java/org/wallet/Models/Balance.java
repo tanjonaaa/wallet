@@ -18,5 +18,5 @@ public class Balance {
     @NonNull
     private String accountId;
     @NonNull
-    private double amount;
+    private Double amount;
 }

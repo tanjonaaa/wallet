@@ -1,6 +1,8 @@
 package org.wallet.CrudOperations;
 
+import org.wallet.Components.TransactionComponent;
 import org.wallet.Models.Transaction;
+import org.wallet.connectionDB.ConnectionDB;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -114,6 +116,39 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
             throw new RuntimeException(e);
         }
         return deleted;
+    }
+
+    public List<TransactionComponent> getTransactionByAccountId(String accountId){
+        List<TransactionComponent> transactions = new ArrayList<>();
+        Connection connection = ConnectionDB.getConnection();
+        String sql = "SELECT * FROM \"transaction\" WHERE account_id = ?";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setString(1, accountId);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next()){
+                Transaction transaction = mapResultSet(resultSet);
+
+                TransactionComponent component = new TransactionComponent(
+                        transaction.getTransactionId(),
+                        transaction.getDescription(),
+                        transaction.getAmount(),
+                        transaction.getTransactionDate(),
+                        transaction.getTransactionType()
+                );
+
+                transactions.add(component);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return transactions;
     }
 
     private Transaction mapResultSet(ResultSet resultSet) throws SQLException {
