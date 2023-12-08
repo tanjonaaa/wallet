@@ -120,7 +120,7 @@ public class AccountCrudOperations implements CrudOperations<Account> {
         return deletedAccount;
     }
 
-    public AccountComponent makeTransaction(Transaction transaction){
+    /*public AccountComponent makeTransaction(Transaction transaction){
         BalanceCrudOperations balanceCRUD = new BalanceCrudOperations();
         TransactionCrudOperations transactionCRUD = new TransactionCrudOperations();
 
@@ -153,7 +153,7 @@ public class AccountCrudOperations implements CrudOperations<Account> {
                 }
             }
         }
-    }
+    }*/
 
     private Account mapResultSet(ResultSet resultSet) throws SQLException {
         Account account = new Account();
