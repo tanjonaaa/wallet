@@ -166,7 +166,6 @@ public class AccountCrudOperations implements CrudOperations<Account> {
                 }
             }
         }
-        
         return accountComponent;
     }
 
