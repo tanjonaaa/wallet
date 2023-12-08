@@ -15,16 +15,14 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         BalanceCrudOperations balanceCrudOperations = new BalanceCrudOperations();
+
         String accountId = "d701dc54-911f-11ee-b9d1-0242ac120002";
         LocalDateTime date = LocalDateTime.parse("2023-12-08T15:00");
 
-        Balance balance = balanceCrudOperations.getAmountByDate(accountId, date);
+        Double totalAmount = balanceCrudOperations.getAmountByDate(accountId, date);
 
-        if (balance != null) {
-            System.out.println("Amount : " + balance.getAmount());
-        } else {
-            System.out.println("error");
-        }
+        // Affichez le résultat dans la console
+        System.out.println("Le montant total est : " + totalAmount);
     }
 }
 

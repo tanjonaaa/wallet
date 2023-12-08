@@ -1,6 +1,5 @@
 package org.wallet.CrudOperations;
 
-import org.wallet.Models.Account;
 import org.wallet.Models.Balance;
 import org.wallet.connectionDB.ConnectionDB;
 
@@ -147,8 +146,8 @@ public class BalanceCrudOperations implements CrudOperations<Balance> {
         return balance;
     }
 
-    public Balance getAmountByDate(String accountId, LocalDateTime amountUpdated) {
-        Balance balance;
+    public Double getAmountByDate(String accountId, LocalDateTime amountUpdated) {
+        Double totalAmount = 0.00; // Initialisez la somme à zéro
         Connection connection = ConnectionDB.getConnection();
 
         String sql = "SELECT SUM(amount) AS balance FROM \"balance\" WHERE account_id = ? AND balance_timestamp <= ?";
@@ -163,16 +162,15 @@ public class BalanceCrudOperations implements CrudOperations<Balance> {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                balance = mapResultSet(resultSet);
-            } else {
-                balance = null;
+                totalAmount = resultSet.getDouble("balance"); // Obtenez la somme directement du ResultSet
             }
+
             statement.close();
             connection.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return balance;
+        return totalAmount;
     }
 
         public List<Balance> getBalanceHistory(String accountId, LocalDateTime startDate, LocalDateTime endDate) {
