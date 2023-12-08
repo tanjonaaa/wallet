@@ -16,6 +16,6 @@ public class AccountComponent {
     private String name;
     private BalanceComponent balance;
     private CurrencyComponent currency;
-    private List<Transaction> transactionList;
+    private List<TransactionComponent> transactionList;
     private String accountType;
 }

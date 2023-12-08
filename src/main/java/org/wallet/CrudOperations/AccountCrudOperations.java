@@ -1,6 +1,7 @@
 package org.wallet.CrudOperations;
 
 import org.wallet.Components.AccountComponent;
+import org.wallet.Components.BalanceComponent;
 import org.wallet.Models.Account;
 import org.wallet.Models.Balance;
 import org.wallet.Models.Transaction;
@@ -121,6 +122,7 @@ public class AccountCrudOperations implements CrudOperations<Account> {
     }
 
     public AccountComponent makeTransaction(Transaction transaction){
+        AccountComponent accountComponent = null;
         BalanceCrudOperations balanceCRUD = new BalanceCrudOperations();
         TransactionCrudOperations transactionCRUD = new TransactionCrudOperations();
 
@@ -135,11 +137,22 @@ public class AccountCrudOperations implements CrudOperations<Account> {
                     )
             );
             if(Objects.equals(transaction.getTransactionType(), "income")){
-                transactionCRUD.save(transaction);
+                Transaction saved = transactionCRUD.save(transaction);
+                accountComponent = this.getAccountById(saved.getAccountId());
             }
         }else {
             if(Objects.equals(transaction.getTransactionType(), "expense")){
-
+                if(accountBalance.getAmount() >= transaction.getAmount()){
+                    balanceCRUD.save(
+                        new Balance(
+                                LocalDateTime.now(),
+                                transaction.getTransactionId(),
+                                accountBalance.getAmount() - transaction.getAmount()
+                        )
+                    );
+                    Transaction saved = transactionCRUD.save(transaction);
+                    accountComponent = this.getAccountById(saved.getAccountId());
+                }
             }else {
                 balanceCRUD.save(
                         new Balance(
@@ -153,6 +166,50 @@ public class AccountCrudOperations implements CrudOperations<Account> {
                 }
             }
         }
+        
+        return accountComponent;
+    }
+
+    public AccountComponent getAccountById(String id){
+        Account account = new Account();
+        BalanceCrudOperations balanceCrud = new BalanceCrudOperations();        
+        CurrencyCrudOperations currencyCRUD = new CurrencyCrudOperations();
+        TransactionCrudOperations transactionCRUD = new TransactionCrudOperations();
+        
+        Connection connection = ConnectionDB.getConnection();
+
+        String sql = "SELECT * FROM \"account\" WHERE account_id = ?";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setString(1, id);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if(resultSet.next()){
+                account = mapResultSet(resultSet);
+            }
+
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        BalanceComponent accountBalance = new BalanceComponent(
+                balanceCrud.getLastBalanceOfAccount(account.getAccountId()).getAmount(),
+                balanceCrud.getLastBalanceOfAccount(account.getAccountId()).getBalanceTimestamp()
+        );
+
+        return new AccountComponent(
+                account.getAccountId(),
+                account.getName(),
+                accountBalance,
+                currencyCRUD.getCurrencyById(account.getCurrencyId()),
+                transactionCRUD.getTransactionByAccountId(account.getAccountId()),
+                account.getAccountType()
+        );
     }
 
     private Account mapResultSet(ResultSet resultSet) throws SQLException {

@@ -1,5 +1,6 @@
 package org.wallet.CrudOperations;
 
+import org.wallet.Components.CurrencyComponent;
 import org.wallet.Models.Currency;
 import org.wallet.connectionDB.ConnectionDB;
 
@@ -114,6 +115,37 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
         }
 
         return deletedCurrency;
+    }
+
+    public CurrencyComponent getCurrencyById(String id){
+        Currency currency;
+
+        Connection connection = ConnectionDB.getConnection();
+
+        String sql = "SELECT * FROM \"currency\" WHERE currency_id = ?";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setString(1, id);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if(resultSet.next()){
+                currency = this.mapResultSet(resultSet);
+            }else {
+                currency = null;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return new CurrencyComponent(
+                currency.getCurrencyId(),
+                currency.getName(),
+                currency.getCode()
+        );
     }
 
     private Currency mapResultSet(ResultSet resultSet) throws SQLException {
