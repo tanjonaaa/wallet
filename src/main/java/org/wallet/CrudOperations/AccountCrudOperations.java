@@ -120,40 +120,6 @@ public class AccountCrudOperations implements CrudOperations<Account> {
         return deletedAccount;
     }
 
-    /*public AccountComponent makeTransaction(Transaction transaction){
-        BalanceCrudOperations balanceCRUD = new BalanceCrudOperations();
-        TransactionCrudOperations transactionCRUD = new TransactionCrudOperations();
-
-        Balance accountBalance = balanceCRUD.getLastBalanceOfAccount(transaction.getAccountId());
-
-        if(accountBalance == null){
-            balanceCRUD.save(
-                    new Balance(
-                            LocalDateTime.now(),
-                            transaction.getTransactionId(),
-                            0.0
-                    )
-            );
-            if(Objects.equals(transaction.getTransactionType(), "income")){
-                transactionCRUD.save(transaction);
-            }
-        }else {
-            if(Objects.equals(transaction.getTransactionType(), "expense")){
-
-            }else {
-                balanceCRUD.save(
-                        new Balance(
-                                LocalDateTime.now(),
-                                transaction.getTransactionId(),
-                                accountBalance.getAmount() + transaction.getAmount()
-                        )
-                );
-                if(Objects.equals(transaction.getTransactionType(), "income")){
-                    transactionCRUD.save(transaction);
-                }
-            }
-        }
-    }*/
 
     private Account mapResultSet(ResultSet resultSet) throws SQLException {
         Account account = new Account();
