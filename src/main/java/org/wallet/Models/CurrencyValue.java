@@ -2,7 +2,7 @@ package org.wallet.Models;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,5 +16,5 @@ public class CurrencyValue {
     private String idCurrencySource;
     private String idCurrencyDestination;
     private Double changeRate;
-    private LocalDateTime currencyValueDate;
+    private LocalDate currencyValueDate;
 }
