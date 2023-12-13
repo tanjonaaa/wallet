@@ -3,5 +3,5 @@ CREATE TABLE "currency_value" (
   id_currency_source varchar not null references currency(currency_id),
   id_currency_destination varchar not null references currency(currency_id),
   change_rate double precision not null,
-  currency_value_date timestamp not null default current_timestamp
+  currency_value_date date not null default current_date
 );
