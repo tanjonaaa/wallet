@@ -4,6 +4,7 @@ import org.wallet.Components.AccountComponent;
 import org.wallet.Components.BalanceComponent;
 import org.wallet.Models.Account;
 import org.wallet.Models.Balance;
+import org.wallet.Models.TranferHistory;
 import org.wallet.Models.Transaction;
 import org.wallet.connectionDB.ConnectionDB;
 
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class AccountCrudOperations implements CrudOperations<Account> {
+    private static final TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
+    private static final TransferHistoryCrudOperations transferHistoryCrud = new TransferHistoryCrudOperations();
     public static final String ACCOUNT_ID_COLUMN = "account_id";
     public static final String CURRENCY_ID_COLUMN = "currency_id";
     public static final String ACCOUNT_TYPE_COLUMN = "account_type";
@@ -209,6 +212,37 @@ public class AccountCrudOperations implements CrudOperations<Account> {
                 transactionCRUD.getTransactionByAccountId(account.getAccountId()),
                 account.getAccountType()
         );
+    }
+
+    public TranferHistory makeTransfer(String debitAccount, String creditAccount, Double amount){
+        if(!debitAccount.equals(creditAccount)){
+            Connection connection = ConnectionDB.getConnection();
+            Transaction debitTransaction = Transaction.builder()
+                    .description("Transfer of "+amount+" to "+creditAccount)
+                    .amount(amount)
+                    .transactionType("expense")
+                    .accountId(debitAccount)
+                    .build();
+
+            Transaction creditTransaction = Transaction.builder()
+                    .description("Transfer of "+amount+" from "+debitAccount)
+                    .amount(amount)
+                    .transactionType("income")
+                    .accountId(debitAccount)
+                    .build();
+
+            Transaction savedDebit = transactionCrud.save(debitTransaction);
+            Transaction savedCredit = transactionCrud.save(creditTransaction);
+
+            return transferHistoryCrud.save(
+                    TranferHistory.builder()
+                            .debitTransactionId(savedDebit.getTransactionId())
+                            .creditTransactionId(savedCredit.getTransactionId())
+                            .build()
+            );
+        }else {
+            return null;
+        }
     }
 
     private Account mapResultSet(ResultSet resultSet) throws SQLException {
