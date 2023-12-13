@@ -1,0 +1,1 @@
+create type category_type as enum ('Income','Expense');

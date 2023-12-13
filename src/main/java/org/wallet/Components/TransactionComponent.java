@@ -17,4 +17,5 @@ public class TransactionComponent {
     private Double amount;
     private LocalDateTime transactionDate;
     private String transactionType;
+    private String categoryId;
 }
