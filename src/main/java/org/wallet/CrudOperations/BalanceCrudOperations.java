@@ -1,5 +1,6 @@
 package org.wallet.CrudOperations;
 
+import org.wallet.Components.BalanceComponent;
 import org.wallet.Models.Balance;
 import org.wallet.connectionDB.ConnectionDB;
 
@@ -201,6 +202,7 @@ public class BalanceCrudOperations implements CrudOperations<Balance> {
 
             return balanceHistory;
         }
+
 
     private Balance mapResultSet(ResultSet resultSet) throws SQLException {
         Balance balance = new Balance();
