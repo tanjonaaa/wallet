@@ -151,6 +151,31 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
         return transactions;
     }
 
+    public Transaction getById(String id){
+        Connection connection = ConnectionDB.getConnection();
+        String sql = "SELECT * FROM \"transaction\" WHERE transaction_id = ?";
+        Transaction transaction = null;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setString(1, id);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if(resultSet.next()){
+                transaction = mapResultSet(resultSet);
+            }
+
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return transaction;
+    }
+
     private Transaction mapResultSet(ResultSet resultSet) throws SQLException {
         Transaction transaction = new Transaction();
         transaction.setTransactionId(resultSet.getString(TRANSACTION_ID_COLUMN));

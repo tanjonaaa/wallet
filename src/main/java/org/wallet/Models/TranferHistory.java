@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @Getter
 @Setter
+@Builder
 public class TranferHistory {
     private String transferHistoryId;
     @NonNull
