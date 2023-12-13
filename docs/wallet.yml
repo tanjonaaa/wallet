@@ -8,6 +8,7 @@ tags:
   - name: Account
   - name: Currency
   - name: Transaction
+  - name: CurrencyValues
 paths:
   /account:
     get:
@@ -240,6 +241,47 @@ paths:
         400:
           $ref: '#/components/responses/400'
 
+  /currencyValues:
+    get:
+      tags:
+        - CurrencyValues
+      summary: Get all currencyValues
+      description: The returned currencyValues are ordered by date.
+      operationId: getcurrencyValues
+      responses:
+        200:
+          description: successfully returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/currencyValue'
+    put:
+      summary: Create or update currencyValues
+      operationId: crupdateCurrencyValues
+      tags:
+        - CurrencyValues
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/currencyValue'
+      responses:
+        200:
+          description: The list of created or updated currency
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/currencyValue'
+        '400':
+          $ref: '#/components/responses/400'
+
+
 components:
   responses:
     400:
@@ -401,6 +443,22 @@ components:
         lastUpdate:
           type: string
           format: date-time
+
+    currencyValue:
+      type: object
+      properties:
+        currencyValueId:
+          type: string
+        idCurrencySource:
+          type: string
+        idCurrencyDestination:
+          type: string
+        changeRate:
+          type: number
+        currencyValueDate:
+          type: string
+          format: date-time
+
 
 
   parameters:
