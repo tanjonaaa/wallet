@@ -25,4 +25,6 @@ public class Transaction {
         private String transactionType;
         @NonNull
         private String accountId;
+        @NonNull
+        private String categoryId;
 }
