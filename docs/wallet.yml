@@ -96,6 +96,28 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/transaction'
+
+  /account/{id}/balance:
+    get:
+      tags:
+        - Account
+      parameters:
+        - $ref: '#/components/parameters/idParameter'
+        - in: query
+          name: balanceDate
+          description: Get the balance at the given date
+          schema:
+            type: string
+            format: datetime
+          required: true
+      responses:
+        200:
+          description: Successfully get balance
+          content:
+            application/json:
+              schema:
+                type: number
+
   /currency:
     get:
       tags:
