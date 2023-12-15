@@ -2,6 +2,7 @@ package org.wallet.CrudOperations;
 
 import org.wallet.Components.TransactionComponent;
 import org.wallet.Models.Transaction;
+import org.wallet.Models.Types.TransactionType;
 import org.wallet.connectionDB.ConnectionDB;
 
 import java.sql.*;
@@ -59,11 +60,11 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
 
         String sql;
         if(toSave.getTransactionId() == null){
-            sql = "INSERT INTO transaction ( description,  amount, account_id,transaction_type,category_id) " +
-                    "VALUES (?, ?, ?, CAST(? AS transaction_type),?) RETURNING *";
+            sql = "INSERT INTO transaction ( description,  amount, account_id, transaction_type, category_id) " +
+                    "VALUES (?, ?, ?, ? ,?) RETURNING *";
         }else {
             sql = "UPDATE transaction " +
-                    "SET description = ?,  amount = ?, account_id = ?, transaction_type = CAST(? AS transaction_type)" +
+                    "SET description = ?,  amount = ?, account_id = ?, transaction_type = ?" +
                     " , category_id = ? WHERE transaction_id = ? RETURNING *";
         }
 
@@ -76,7 +77,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
             statement.setString(1, toSave.getDescription());
             statement.setObject(2, toSave.getAmount());
             statement.setString(3, toSave.getAccountId());
-            statement.setString(4, toSave.getTransactionType());
+            statement.setString(4, toSave.getTransactionType().toString());
             statement.setString(5,toSave.getCategoryId());
 
             if(toSave.getTransactionId() != null){
@@ -140,7 +141,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
                         transaction.getDescription(),
                         transaction.getAmount(),
                         transaction.getTransactionDate(),
-                        transaction.getTransactionType(),
+                        transaction.getTransactionType().toString(),
                         transaction.getCategoryId()
                 );
 
@@ -185,7 +186,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
         transaction.setDescription(resultSet.getString(DESCRIPTION_COLUMN));
         transaction.setAmount(resultSet.getDouble(AMOUNT_COLUMN));
         transaction.setTransactionDate(resultSet.getTimestamp(TRANSACTION_DATE_COLUMN).toLocalDateTime());
-        transaction.setTransactionType(resultSet.getString(TRANSACTION_TYPE_COLUMN));
+        transaction.setTransactionType(TransactionType.valueOf(resultSet.getString(TRANSACTION_TYPE_COLUMN)));
         transaction.setAccountId(resultSet.getString(ACCOUNT_ID_COLUMN));
         transaction.setCategoryId(resultSet.getString(CATEGORIE_ID_COLUMN));
 

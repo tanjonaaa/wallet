@@ -14,5 +14,5 @@ public class Currency {
     @NonNull
     private String name;
     @NonNull
-    private String code;
+    private String currencyCode;
 }
