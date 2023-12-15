@@ -1,15 +1,19 @@
 package org.wallet.CrudOperations;
 
-import org.wallet.Components.BalanceComponent;
+import org.wallet.Components.TransactionComponent;
 import org.wallet.Models.Balance;
+import org.wallet.Models.Transaction;
+import org.wallet.Models.Types.TransactionType;
 import org.wallet.connectionDB.ConnectionDB;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BalanceCrudOperations implements CrudOperations<Balance> {
+    private static final TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
     public static final String BALANCE_ID_COLUMN = "balance_id";
     public static final String TIMESTAMP_COLUMN = "balance_timestamp";
     public static final String ACCOUNT_ID_COLUMN = "account_id";
@@ -147,31 +151,32 @@ public class BalanceCrudOperations implements CrudOperations<Balance> {
         return balance;
     }
 
-    public Double getAmountByDate(String accountId, LocalDateTime amountUpdated) {
-        Double totalAmount = 0.00; // Initialisez la somme à zéro
-        Connection connection = ConnectionDB.getConnection();
+    public double getAmountByDate(String accountId, LocalDateTime amountUpdated) {
+        List<TransactionComponent> transactions = transactionCrud.getTransactionByAccountId(accountId, amountUpdated);
+        double balance = 0.0;
 
-        String sql = "SELECT SUM(amount) AS balance FROM \"balance\" WHERE account_id = ? AND balance_timestamp <= ?";
+        List<TransactionComponent> mappedTransactions = transactions.stream().map(
+          (transaction) -> {
+              if(transaction.getTransactionType().equals(TransactionType.EXPENSE.toString())){
+                  return TransactionComponent.builder()
+                          .transactionId(transaction.getTransactionId())
+                          .amount(-transaction.getAmount())
+                          .description(transaction.getDescription())
+                          .transactionDate(transaction.getTransactionDate())
+                          .transactionType(transaction.getTransactionType())
+                          .categoryId(transaction.getCategoryId())
+                          .build();
+              }else {
+                  return transaction;
+              }
+          }
+        ).toList();
 
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-
-            statement.setString(1, accountId);
-
-            statement.setTimestamp(2, Timestamp.valueOf(amountUpdated));
-
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                totalAmount = resultSet.getDouble("balance"); // Obtenez la somme directement du ResultSet
-            }
-
-            statement.close();
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        for (TransactionComponent mappedTransaction : mappedTransactions) {
+            balance += mappedTransaction.getAmount();
         }
-        return totalAmount;
+
+        return balance;
     }
 
         public List<Balance> getBalanceHistory(String accountId, LocalDateTime startDate, LocalDateTime endDate) {

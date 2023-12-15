@@ -13,12 +13,15 @@ import org.wallet.connectionDB.ConnectionDB;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class AccountCrudOperations implements CrudOperations<Account> {
     private static final TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
     private static final TransferHistoryCrudOperations transferHistoryCrud = new TransferHistoryCrudOperations();
+    private static final CategoryCrudOperations categoryCrud = new CategoryCrudOperations();
+    private static final BalanceCrudOperations balanceCrud = new BalanceCrudOperations();
     public static final String ACCOUNT_ID_COLUMN = "account_id";
     public static final String ACCOUNT_NAME_COLUMN = "name";
     public static final String CURRENCY_ID_COLUMN = "currency_id";
@@ -92,6 +95,14 @@ public class AccountCrudOperations implements CrudOperations<Account> {
             resultSet.next();
             savedAccount = mapResultSet(resultSet);
 
+            balanceCrud.save(
+                new Balance(
+                        LocalDateTime.now(),
+                        savedAccount.getAccountId(),
+                        0.0
+                )
+            );
+
             statement.close();
             connection.close();
         } catch (SQLException e) {
@@ -135,25 +146,12 @@ public class AccountCrudOperations implements CrudOperations<Account> {
 
         Balance accountBalance = balanceCRUD.getLastBalanceOfAccount(transaction.getAccountId());
 
-        if(accountBalance == null){
-            balanceCRUD.save(
-                    new Balance(
-                            LocalDateTime.now(),
-                            transaction.getTransactionId(),
-                            0.0
-                    )
-            );
-            if(Objects.equals(transaction.getTransactionType(), "income")){
-                Transaction saved = transactionCRUD.save(transaction);
-                accountComponent = this.getAccountById(saved.getAccountId());
-            }
-        }else {
-            if(Objects.equals(transaction.getTransactionType(), "expense")){
+            if(transaction.getTransactionType() == TransactionType.EXPENSE){
                 if(accountBalance.getAmount() >= transaction.getAmount()){
                     balanceCRUD.save(
                         new Balance(
                                 LocalDateTime.now(),
-                                transaction.getTransactionId(),
+                                transaction.getAccountId(),
                                 accountBalance.getAmount() - transaction.getAmount()
                         )
                     );
@@ -164,15 +162,13 @@ public class AccountCrudOperations implements CrudOperations<Account> {
                 balanceCRUD.save(
                         new Balance(
                                 LocalDateTime.now(),
-                                transaction.getTransactionId(),
+                                transaction.getAccountId(),
                                 accountBalance.getAmount() + transaction.getAmount()
                         )
                 );
-                if(Objects.equals(transaction.getTransactionType(), "income")){
-                    transactionCRUD.save(transaction);
-                }
+                Transaction saved = transactionCRUD.save(transaction);
+                accountComponent = this.getAccountById(saved.getAccountId());
             }
-        }
         return accountComponent;
     }
 
@@ -213,26 +209,32 @@ public class AccountCrudOperations implements CrudOperations<Account> {
                 account.getName(),
                 accountBalance,
                 currencyCRUD.getCurrencyById(account.getCurrencyId()),
-                transactionCRUD.getTransactionByAccountId(account.getAccountId()),
+                transactionCRUD.getTransactionByAccountId(account.getAccountId(), null),
                 account.getAccountType().toString()
         );
     }
 
     public TranferHistory makeTransfer(String debitAccount, String creditAccount, Double amount){
+        List<String> ids = Arrays.asList(
+                categoryCrud.getCategoryId("Transfer", TransactionType.INCOME),
+                categoryCrud.getCategoryId("Transfer", TransactionType.EXPENSE)
+        );
+
         if(!debitAccount.equals(creditAccount)){
-            Connection connection = ConnectionDB.getConnection();
             Transaction debitTransaction = Transaction.builder()
                     .description("Transfer of "+amount+" to "+creditAccount)
                     .amount(amount)
                     .transactionType(TransactionType.EXPENSE)
                     .accountId(debitAccount)
+                    .categoryId(ids.get(1))
                     .build();
 
             Transaction creditTransaction = Transaction.builder()
                     .description("Transfer of "+amount+" from "+debitAccount)
                     .amount(amount)
                     .transactionType(TransactionType.INCOME)
-                    .accountId(debitAccount)
+                    .accountId(creditAccount)
+                    .categoryId(ids.get(0))
                     .build();
 
             Transaction savedDebit = transactionCrud.save(debitTransaction);

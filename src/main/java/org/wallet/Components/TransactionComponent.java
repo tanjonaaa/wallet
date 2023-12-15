@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @EqualsAndHashCode
+@Builder
 public class TransactionComponent {
     private String transactionId;
     private String description;
