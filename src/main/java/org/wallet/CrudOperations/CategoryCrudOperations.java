@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CategoryCrudOperations implements CrudOperations<Category>{
     TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
@@ -34,22 +35,34 @@ public class CategoryCrudOperations implements CrudOperations<Category>{
         return null;
     }
 
-    private boolean checkDateIsBetween(LocalDate startDate, LocalDate endDate){
+    /*private boolean checkDateIsBetween(LocalDate startDate, LocalDate endDate){
         return
-    }
+    }*/
 
-    public List<CategoryAndAmount> getSumOfTransactions(String accountId, LocalDate startDate, LocalDate endDate){
-        Connection connection = ConnectionDB.getConnection();
+    public List<CategoryAndAmount> getSumOfTransactions(String accountId, LocalDate startDate, LocalDate endDate) {
         List<CategoryAndAmount> result = new ArrayList<>();
 
         List<TransactionComponent> transactions = transactionCrud.getTransactionByAccountId(accountId);
 
-        if(transactions.size() != 0){
-            transactions = transactions.stream().filter(
-                    transaction ->
-            );
-        }
+        if (!transactions.isEmpty()) {
+            System.out.println("Number of transactions retrieved: " + transactions.size());
 
+            Map<String, Double> categorySumMap = transactions.stream()
+                    .filter(transaction ->
+                            transaction.getTransactionDate().toLocalDate().isAfter(startDate) &&
+                                    transaction.getTransactionDate().toLocalDate().isBefore(endDate))
+                    .collect(Collectors.groupingBy(TransactionComponent::getCategoryId,
+                            Collectors.summingDouble(TransactionComponent::getAmount)));
+
+            System.out.println("Number of categories with sum: " + categorySumMap.size());
+
+            if (!categorySumMap.isEmpty()) {
+                result.add(CategoryAndAmount.builder().matching(categorySumMap).build());
+            } else {
+                System.out.println("No transactions found for the specified entries.");
+            }
+        }
         return result;
     }
 }
+
