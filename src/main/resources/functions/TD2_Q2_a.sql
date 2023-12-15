@@ -15,5 +15,3 @@ BEGIN
           AND t.transaction_date BETWEEN start_date_param AND end_date_param;
 END;
 $$ LANGUAGE plpgsql;
-
-
