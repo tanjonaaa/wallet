@@ -15,6 +15,6 @@ public class CurrencyValue {
     private String currencyValueId;
     private String idCurrencySource;
     private String idCurrencyDestination;
-    private Double changeRate;
+    private Double EuroEnAriary; // exemple input : 4500Ar
     private LocalDateTime currencyValueDate;
 }
