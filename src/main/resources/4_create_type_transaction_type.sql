@@ -1,1 +1,1 @@
-create type transaction_type as enum ('expense', 'income');
+create type transaction_type as enum ('EXPENSE', 'INCOME');

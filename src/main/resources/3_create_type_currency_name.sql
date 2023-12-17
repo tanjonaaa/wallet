@@ -1,1 +1,1 @@
-create type currency_name as enum ('Euro', 'Ariary');
+create type currency_name as enum ('EURO', 'ARIARY');
