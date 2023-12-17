@@ -1,6 +1,7 @@
 package org.wallet.Models;
 
 import lombok.*;
+import org.wallet.Models.Types.TransactionType;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -20,9 +21,9 @@ public class Transaction {
         private String description;
         @NonNull
         private Double amount;
-        @NonNull
         private LocalDateTime transactionDate;
-        private String transactionType;
+        @NonNull
+        private TransactionType transactionType;
         @NonNull
         private String accountId;
         @NonNull

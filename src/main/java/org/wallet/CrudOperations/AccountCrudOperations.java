@@ -6,6 +6,8 @@ import org.wallet.Models.Account;
 import org.wallet.Models.Balance;
 import org.wallet.Models.TranferHistory;
 import org.wallet.Models.Transaction;
+import org.wallet.Models.Types.AccountType;
+import org.wallet.Models.Types.TransactionType;
 import org.wallet.connectionDB.ConnectionDB;
 
 import java.sql.*;
@@ -18,6 +20,7 @@ public class AccountCrudOperations implements CrudOperations<Account> {
     private static final TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
     private static final TransferHistoryCrudOperations transferHistoryCrud = new TransferHistoryCrudOperations();
     public static final String ACCOUNT_ID_COLUMN = "account_id";
+    public static final String ACCOUNT_NAME_COLUMN = "name";
     public static final String CURRENCY_ID_COLUMN = "currency_id";
     public static final String ACCOUNT_TYPE_COLUMN = "account_type";
     @Override
@@ -64,22 +67,23 @@ public class AccountCrudOperations implements CrudOperations<Account> {
         String sql;
 
         if(toSave.getAccountId() == null){
-            sql = "INSERT INTO \"account\" (account_type, currency_id) " +
-                    "VALUES(CAST(? AS account_type), ?) RETURNING *";
+            sql = "INSERT INTO \"account\" (name, account_type, currency_id) " +
+                    "VALUES(?, ? , ?) RETURNING *";
         }else {
             sql = "UPDATE \"account\" " +
-                    "SET account_type = CAST(? AS account_type), currency_id = ? " +
+                    "SET name = ?, account_type = ?, currency_id = ? " +
                     "WHERE account_id = ? RETURNING *";
         }
 
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
 
-            statement.setString(1, toSave.getAccountType());
-            statement.setString(2, toSave.getCurrencyId());
+            statement.setString(1, toSave.getName());
+            statement.setString(2, toSave.getAccountType().toString());
+            statement.setString(3, toSave.getCurrencyId());
 
             if(toSave.getAccountId() != null){
-                statement.setString(3, toSave.getAccountId());
+                statement.setString(4, toSave.getAccountId());
             }
 
             statement.execute();
@@ -210,7 +214,7 @@ public class AccountCrudOperations implements CrudOperations<Account> {
                 accountBalance,
                 currencyCRUD.getCurrencyById(account.getCurrencyId()),
                 transactionCRUD.getTransactionByAccountId(account.getAccountId()),
-                account.getAccountType()
+                account.getAccountType().toString()
         );
     }
 
@@ -220,14 +224,14 @@ public class AccountCrudOperations implements CrudOperations<Account> {
             Transaction debitTransaction = Transaction.builder()
                     .description("Transfer of "+amount+" to "+creditAccount)
                     .amount(amount)
-                    .transactionType("expense")
+                    .transactionType(TransactionType.EXPENSE)
                     .accountId(debitAccount)
                     .build();
 
             Transaction creditTransaction = Transaction.builder()
                     .description("Transfer of "+amount+" from "+debitAccount)
                     .amount(amount)
-                    .transactionType("income")
+                    .transactionType(TransactionType.INCOME)
                     .accountId(debitAccount)
                     .build();
 
@@ -248,8 +252,9 @@ public class AccountCrudOperations implements CrudOperations<Account> {
     private Account mapResultSet(ResultSet resultSet) throws SQLException {
         Account account = new Account();
         account.setAccountId(resultSet.getString(ACCOUNT_ID_COLUMN));
+        account.setName(resultSet.getString(ACCOUNT_NAME_COLUMN));
         account.setCurrencyId(resultSet.getString(CURRENCY_ID_COLUMN));
-        account.setAccountType(resultSet.getString(ACCOUNT_TYPE_COLUMN));
+        account.setAccountType(AccountType.valueOf(resultSet.getString(ACCOUNT_TYPE_COLUMN)));
 
         return account;
     }
