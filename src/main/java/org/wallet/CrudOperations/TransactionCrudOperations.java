@@ -6,6 +6,7 @@ import org.wallet.Models.Types.TransactionType;
 import org.wallet.connectionDB.ConnectionDB;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,15 +122,20 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
         return deleted;
     }
 
-    public List<TransactionComponent> getTransactionByAccountId(String accountId){
+    public List<TransactionComponent> getTransactionByAccountId(String accountId, LocalDateTime date){
         List<TransactionComponent> transactions = new ArrayList<>();
         Connection connection = ConnectionDB.getConnection();
-        String sql = "SELECT * FROM \"transaction\" WHERE account_id = ?";
+
+        String sql = (date == null) ? "SELECT * FROM \"transaction\" WHERE account_id = ?" : "SELECT * FROM \"transaction\" WHERE account_id = ? AND transaction_date <= ?";
 
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
 
             statement.setString(1, accountId);
+
+            if(date != null){
+                statement.setTimestamp(2, Timestamp.valueOf(date));
+            }
 
             ResultSet resultSet = statement.executeQuery();
 

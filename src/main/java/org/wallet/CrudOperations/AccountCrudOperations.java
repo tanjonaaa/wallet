@@ -19,6 +19,7 @@ import java.util.Objects;
 public class AccountCrudOperations implements CrudOperations<Account> {
     private static final TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
     private static final TransferHistoryCrudOperations transferHistoryCrud = new TransferHistoryCrudOperations();
+    private static final BalanceCrudOperations balanceCrud = new BalanceCrudOperations();
     public static final String ACCOUNT_ID_COLUMN = "account_id";
     public static final String ACCOUNT_NAME_COLUMN = "name";
     public static final String CURRENCY_ID_COLUMN = "currency_id";
@@ -92,6 +93,14 @@ public class AccountCrudOperations implements CrudOperations<Account> {
             resultSet.next();
             savedAccount = mapResultSet(resultSet);
 
+            balanceCrud.save(
+                new Balance(
+                        LocalDateTime.now(),
+                        savedAccount.getAccountId(),
+                        0.0
+                )
+            );
+
             statement.close();
             connection.close();
         } catch (SQLException e) {
@@ -135,25 +144,12 @@ public class AccountCrudOperations implements CrudOperations<Account> {
 
         Balance accountBalance = balanceCRUD.getLastBalanceOfAccount(transaction.getAccountId());
 
-        if(accountBalance == null){
-            balanceCRUD.save(
-                    new Balance(
-                            LocalDateTime.now(),
-                            transaction.getTransactionId(),
-                            0.0
-                    )
-            );
-            if(Objects.equals(transaction.getTransactionType(), "income")){
-                Transaction saved = transactionCRUD.save(transaction);
-                accountComponent = this.getAccountById(saved.getAccountId());
-            }
-        }else {
-            if(Objects.equals(transaction.getTransactionType(), "expense")){
+            if(transaction.getTransactionType() == TransactionType.EXPENSE){
                 if(accountBalance.getAmount() >= transaction.getAmount()){
                     balanceCRUD.save(
                         new Balance(
                                 LocalDateTime.now(),
-                                transaction.getTransactionId(),
+                                transaction.getAccountId(),
                                 accountBalance.getAmount() - transaction.getAmount()
                         )
                     );
@@ -164,15 +160,13 @@ public class AccountCrudOperations implements CrudOperations<Account> {
                 balanceCRUD.save(
                         new Balance(
                                 LocalDateTime.now(),
-                                transaction.getTransactionId(),
+                                transaction.getAccountId(),
                                 accountBalance.getAmount() + transaction.getAmount()
                         )
                 );
-                if(Objects.equals(transaction.getTransactionType(), "income")){
-                    transactionCRUD.save(transaction);
-                }
+                Transaction saved = transactionCRUD.save(transaction);
+                accountComponent = this.getAccountById(saved.getAccountId());
             }
-        }
         return accountComponent;
     }
 
@@ -213,7 +207,7 @@ public class AccountCrudOperations implements CrudOperations<Account> {
                 account.getName(),
                 accountBalance,
                 currencyCRUD.getCurrencyById(account.getCurrencyId()),
-                transactionCRUD.getTransactionByAccountId(account.getAccountId()),
+                transactionCRUD.getTransactionByAccountId(account.getAccountId(), null),
                 account.getAccountType().toString()
         );
     }

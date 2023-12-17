@@ -42,7 +42,7 @@ public class CategoryCrudOperations implements CrudOperations<Category>{
     public List<CategoryAndAmount> getSumOfTransactions(String accountId, LocalDate startDate, LocalDate endDate) {
         List<CategoryAndAmount> result = new ArrayList<>();
 
-        List<TransactionComponent> transactions = transactionCrud.getTransactionByAccountId(accountId);
+        List<TransactionComponent> transactions = transactionCrud.getTransactionByAccountId(accountId, null);
 
         if (!transactions.isEmpty()) {
             System.out.println("Number of transactions retrieved: " + transactions.size());
