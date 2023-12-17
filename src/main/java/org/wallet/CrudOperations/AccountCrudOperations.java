@@ -250,6 +250,48 @@ public class AccountCrudOperations implements CrudOperations<Account> {
         }
     }
 
+    private Double getExchangeRate(LocalDateTime transactionTimestamp, String calculationType) {
+        Connection connection = ConnectionDB.getConnection();
+        String sql;
+
+        switch (calculationType) {
+            case "average":
+                sql = "SELECT AVG(change_rate) FROM currency_value WHERE date_trunc('day', currency_value_date) = ?";
+                break;
+            case "minimum":
+                sql = "SELECT MIN(change_rate) FROM currency_value WHERE date_trunc('day', currency_value_date) = ?";
+                break;
+            case "maximum":
+                sql = "SELECT MAX(change_rate) FROM currency_value WHERE date_trunc('day', currency_value_date) = ?";
+                break;
+            case "median":
+                sql = "SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY change_rate) FROM" +
+                        " currency_value WHERE date_trunc('day', currency_value_date) = ?";
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid calculation type");
+        }
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setObject(1, transactionTimestamp);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getDouble(1);
+            }
+
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return 1.0;
+    }
+
     private Account mapResultSet(ResultSet resultSet) throws SQLException {
         Account account = new Account();
         account.setAccountId(resultSet.getString(ACCOUNT_ID_COLUMN));
