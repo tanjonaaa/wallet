@@ -1,1 +1,0 @@
-ALTER TABLE transaction ADD COLUMN category_id varchar(250) REFERENCES categories(category_id);

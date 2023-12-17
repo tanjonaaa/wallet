@@ -1,1 +1,1 @@
-create type account_type as enum ('Bank', 'Cash', 'Mobile Money');
+create type account_type as enum ('BANK', 'CASH', 'MOBILE_MONEY');

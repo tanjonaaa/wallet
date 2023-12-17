@@ -1,6 +1,7 @@
 package org.wallet.Models;
 
 import lombok.*;
+import org.wallet.Models.Types.AccountType;
 
 import java.util.List;
 
@@ -18,5 +19,5 @@ public class Account {
     @NonNull
     private String currencyId;
     @NonNull
-    private String accountType;
+    private AccountType accountType;
 }
