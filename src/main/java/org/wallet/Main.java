@@ -22,10 +22,8 @@ public class Main {
         var accountCrud = new AccountCrudOperations();
         var balanceCrud = new BalanceCrudOperations();
 
-        System.out.println(balanceCrud.getAmountByDate(
-                "6f167b81-13dc-476d-a2a2-531b4b483cc0",
-                LocalDateTime.parse("2023-12-17 12:15", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-        ));
+        System.out.println(balanceCrud.getAmountByDate("6f167b81-13dc-476d-a2a2-531b4b483cc0", LocalDateTime.now()));
+        System.out.println(balanceCrud.getAmountByDate("a103aa3d-60e2-4b65-b6e4-7254338ac5ff", LocalDateTime.now()));
 
         /*
         System.out.println(accountCrud.makeTransaction(

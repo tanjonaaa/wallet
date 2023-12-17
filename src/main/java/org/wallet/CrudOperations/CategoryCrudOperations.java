@@ -3,6 +3,7 @@ package org.wallet.CrudOperations;
 import org.wallet.Components.TransactionComponent;
 import org.wallet.Models.Category;
 import org.wallet.Models.CategoryAndAmount;
+import org.wallet.Models.Types.TransactionType;
 import org.wallet.connectionDB.ConnectionDB;
 
 import java.sql.*;
@@ -38,6 +39,28 @@ public class CategoryCrudOperations implements CrudOperations<Category>{
     /*private boolean checkDateIsBetween(LocalDate startDate, LocalDate endDate){
         return
     }*/
+
+    public String getCategoryId(String name, TransactionType type){
+        Connection connection = ConnectionDB.getConnection();
+        String result;
+        String sql = "SELECT category_id FROM categories WHERE category_name = ? AND transaction_type = CAST(? AS transaction_type)";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setString(1, name);
+            statement.setString(2, String.valueOf(type));
+
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            result = resultSet.getString("category_id");
+
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
 
     public List<CategoryAndAmount> getSumOfTransactions(String accountId, LocalDate startDate, LocalDate endDate) {
         List<CategoryAndAmount> result = new ArrayList<>();

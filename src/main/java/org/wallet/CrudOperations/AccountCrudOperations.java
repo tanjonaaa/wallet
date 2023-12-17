@@ -13,12 +13,14 @@ import org.wallet.connectionDB.ConnectionDB;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class AccountCrudOperations implements CrudOperations<Account> {
     private static final TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
     private static final TransferHistoryCrudOperations transferHistoryCrud = new TransferHistoryCrudOperations();
+    private static final CategoryCrudOperations categoryCrud = new CategoryCrudOperations();
     private static final BalanceCrudOperations balanceCrud = new BalanceCrudOperations();
     public static final String ACCOUNT_ID_COLUMN = "account_id";
     public static final String ACCOUNT_NAME_COLUMN = "name";
@@ -213,20 +215,26 @@ public class AccountCrudOperations implements CrudOperations<Account> {
     }
 
     public TranferHistory makeTransfer(String debitAccount, String creditAccount, Double amount){
+        List<String> ids = Arrays.asList(
+                categoryCrud.getCategoryId("Transfer", TransactionType.INCOME),
+                categoryCrud.getCategoryId("Transfer", TransactionType.EXPENSE)
+        );
+
         if(!debitAccount.equals(creditAccount)){
-            Connection connection = ConnectionDB.getConnection();
             Transaction debitTransaction = Transaction.builder()
                     .description("Transfer of "+amount+" to "+creditAccount)
                     .amount(amount)
                     .transactionType(TransactionType.EXPENSE)
                     .accountId(debitAccount)
+                    .categoryId(ids.get(1))
                     .build();
 
             Transaction creditTransaction = Transaction.builder()
                     .description("Transfer of "+amount+" from "+debitAccount)
                     .amount(amount)
                     .transactionType(TransactionType.INCOME)
-                    .accountId(debitAccount)
+                    .accountId(creditAccount)
+                    .categoryId(ids.get(0))
                     .build();
 
             Transaction savedDebit = transactionCrud.save(debitTransaction);

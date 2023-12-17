@@ -79,7 +79,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
             statement.setObject(2, toSave.getAmount());
             statement.setString(3, toSave.getAccountId());
             statement.setString(4, toSave.getTransactionType().toString());
-            statement.setString(5,toSave.getCategoryId());
+            statement.setString(5, toSave.getCategoryId());
 
             if(toSave.getTransactionId() != null){
                 statement.setString(5, toSave.getTransactionId());
