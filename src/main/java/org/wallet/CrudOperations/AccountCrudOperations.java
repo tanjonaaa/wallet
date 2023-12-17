@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class AccountCrudOperations implements CrudOperations<Account> {
     private static final TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
@@ -235,37 +234,6 @@ public class AccountCrudOperations implements CrudOperations<Account> {
                     .transactionType(TransactionType.INCOME)
                     .accountId(creditAccount)
                     .categoryId(ids.get(0))
-                    .build();
-
-            Transaction savedDebit = transactionCrud.save(debitTransaction);
-            Transaction savedCredit = transactionCrud.save(creditTransaction);
-
-            return transferHistoryCrud.save(
-                    TranferHistory.builder()
-                            .debitTransactionId(savedDebit.getTransactionId())
-                            .creditTransactionId(savedCredit.getTransactionId())
-                            .build()
-            );
-        }else {
-            return null;
-        }
-    }
-
-    public TranferHistory makeTransfer(String debitAccount, String creditAccount, Double amount){
-        if(!debitAccount.equals(creditAccount)){
-            Connection connection = ConnectionDB.getConnection();
-            Transaction debitTransaction = Transaction.builder()
-                    .description("Transfer of "+amount+" to "+creditAccount)
-                    .amount(amount)
-                    .transactionType("expense")
-                    .accountId(debitAccount)
-                    .build();
-
-            Transaction creditTransaction = Transaction.builder()
-                    .description("Transfer of "+amount+" from "+debitAccount)
-                    .amount(amount)
-                    .transactionType("income")
-                    .accountId(debitAccount)
                     .build();
 
             Transaction savedDebit = transactionCrud.save(debitTransaction);
