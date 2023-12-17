@@ -251,6 +251,37 @@ public class AccountCrudOperations implements CrudOperations<Account> {
         }
     }
 
+    public TranferHistory makeTransfer(String debitAccount, String creditAccount, Double amount){
+        if(!debitAccount.equals(creditAccount)){
+            Connection connection = ConnectionDB.getConnection();
+            Transaction debitTransaction = Transaction.builder()
+                    .description("Transfer of "+amount+" to "+creditAccount)
+                    .amount(amount)
+                    .transactionType("expense")
+                    .accountId(debitAccount)
+                    .build();
+
+            Transaction creditTransaction = Transaction.builder()
+                    .description("Transfer of "+amount+" from "+debitAccount)
+                    .amount(amount)
+                    .transactionType("income")
+                    .accountId(debitAccount)
+                    .build();
+
+            Transaction savedDebit = transactionCrud.save(debitTransaction);
+            Transaction savedCredit = transactionCrud.save(creditTransaction);
+
+            return transferHistoryCrud.save(
+                    TranferHistory.builder()
+                            .debitTransactionId(savedDebit.getTransactionId())
+                            .creditTransactionId(savedCredit.getTransactionId())
+                            .build()
+            );
+        }else {
+            return null;
+        }
+    }
+
     private Account mapResultSet(ResultSet resultSet) throws SQLException {
         Account account = new Account();
         account.setAccountId(resultSet.getString(ACCOUNT_ID_COLUMN));
