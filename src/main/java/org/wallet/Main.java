@@ -8,7 +8,10 @@ import org.wallet.Models.Transaction;
 import org.wallet.Models.Types.AccountType;
 import org.wallet.Models.Types.TransactionType;
 
+import javax.swing.text.DateFormatter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,26 +19,23 @@ import java.util.List;
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
     public static void main(String[] args) {
-        TransactionCrudOperations transactionCrudOperations = new TransactionCrudOperations();
+        var accountCrud = new AccountCrudOperations();
+        var balanceCrud = new BalanceCrudOperations();
 
-        System.out.println(transactionCrudOperations.saveAll(
-                Arrays.asList(
-                        new Transaction(
-                                "Salary",
-                                300_000d,
-                                TransactionType.INCOME,
-                                "18ef4570-bfbf-413c-9d6e-eaee240d0f64",
-                                "597f799b-6796-4699-a16b-546156c85acf"
-                        ),
-                        new Transaction(
-                                "Dinner",
-                                50_000d,
-                                TransactionType.EXPENSE,
-                                "18ef4570-bfbf-413c-9d6e-eaee240d0f64",
-                                "7f259f93-72c3-4819-bd7a-46c496705ebb"
-                        )
+        System.out.println(balanceCrud.getAmountByDate("6f167b81-13dc-476d-a2a2-531b4b483cc0", LocalDateTime.now()));
+        System.out.println(balanceCrud.getAmountByDate("a103aa3d-60e2-4b65-b6e4-7254338ac5ff", LocalDateTime.now()));
+
+        /*
+        System.out.println(accountCrud.makeTransaction(
+                new Transaction(
+                        "Kids",
+                        15_000d,
+                        TransactionType.EXPENSE,
+                        "6f167b81-13dc-476d-a2a2-531b4b483cc0",
+                        "1f35f7fd-2f52-4d8b-aab7-b7c0fae4597c"
                 )
         ).toString());
+         */
     }
 }
 
