@@ -1,19 +1,27 @@
 package org.wallet.CrudOperations;
 
 import org.wallet.Components.TransactionComponent;
+import org.wallet.Models.Account;
 import org.wallet.Models.Balance;
+import org.wallet.Models.TranferHistory;
 import org.wallet.Models.Transaction;
 import org.wallet.Models.Types.TransactionType;
 import org.wallet.connectionDB.ConnectionDB;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class BalanceCrudOperations implements CrudOperations<Balance> {
-    private static final TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
+    private static final AccountCrudOperations accountCrud = new AccountCrudOperations();
+                         TransferHistoryCrudOperations transferHistoryCrud = new TransferHistoryCrudOperations();
+                         CurrencyCrudOperations currencyCrud = new CurrencyCrudOperations();
+                         TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
+                         CurrencyValueCrudOperations currencyValueCrud = new CurrencyValueCrudOperations();
     public static final String BALANCE_ID_COLUMN = "balance_id";
     public static final String TIMESTAMP_COLUMN = "balance_timestamp";
     public static final String ACCOUNT_ID_COLUMN = "account_id";
@@ -174,6 +182,47 @@ public class BalanceCrudOperations implements CrudOperations<Balance> {
 
         for (TransactionComponent mappedTransaction : mappedTransactions) {
             balance += mappedTransaction.getAmount();
+        }
+
+        return balance;
+    }
+
+    public double getAmountWithChangeRate(String accountId, LocalDateTime amountUpdated){
+        List<TransactionComponent> transactions = transactionCrud.getTransactionByAccountId(accountId, amountUpdated);
+        double balance = 0.0;
+
+        List<TransactionComponent> incomes = transactions.stream().filter(
+                transaction -> transaction.getTransactionType().equals(TransactionType.INCOME.toString())
+        ).toList();
+        List<TransactionComponent> expenses = transactions.stream().filter(
+                transaction -> transaction.getTransactionType().equals(TransactionType.EXPENSE.toString())
+        ).toList();
+
+
+        for (TransactionComponent income : incomes) {
+            TranferHistory transfer = transferHistoryCrud.getByCreditTransaction(income.getTransactionId(), income.getTransactionDate());
+            if(transfer != null){
+                String currency = currencyCrud.getCurrencyById(
+                    accountCrud.getAccountById(
+                            transactionCrud.getById(
+                                    transfer.getDebitTransactionId()
+                            ).getAccountId()
+                    ).getCurrency().getCurrencyId()
+                ).getCode();
+
+                if(Objects.equals(currency, "EUR")){
+                    double changeRate = currencyValueCrud.getChangeRate(income.getTransactionDate().toLocalDate());
+                    balance += income.getAmount() * changeRate;
+                }else {
+                    balance += income.getAmount();
+                }
+            }else {
+                balance += income.getAmount();
+            }
+        }
+
+        for (TransactionComponent expense : expenses) {
+            balance += expense.getAmount();
         }
 
         return balance;

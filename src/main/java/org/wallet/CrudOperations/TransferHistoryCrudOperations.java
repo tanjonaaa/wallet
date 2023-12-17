@@ -6,10 +6,7 @@ import org.wallet.Models.TranferHistory;
 import org.wallet.Models.Transaction;
 import org.wallet.connectionDB.ConnectionDB;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +14,7 @@ import java.util.List;
 public class TransferHistoryCrudOperations implements CrudOperations<TranferHistory> {
     private static final AccountCrudOperations accountCrud = new AccountCrudOperations();
     private static final TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
-    public static final String TRANSFER_HISTORY_ID_COLUMN = "transfer_history_id";
+    public static final String TRANSFER_HISTORY_ID_COLUMN = "id";
     public static final String DEBIT_TRANSACTION_ID_COLUMN = "debit_transaction_id";
     public static final String CREDIT_TRANSACTION_ID_COLUMN = "credit_transaction_id";
     public static final String TRANSFER_DATE_COLUMN = "transfer_date";
@@ -44,7 +41,7 @@ public class TransferHistoryCrudOperations implements CrudOperations<TranferHist
         }else{
             sql = "UPDATE \"transfer_history\" " +
                     "SET debit_transaction_id = ?, credit_transaction_id = ? " +
-                    "WHERE transaction_history_id = ? RETURNING *";
+                    "WHERE id = ? RETURNING *";
         }
 
         try {
@@ -76,6 +73,32 @@ public class TransferHistoryCrudOperations implements CrudOperations<TranferHist
     @Override
     public TranferHistory delete(TranferHistory toDelete) {
         return null;
+    }
+
+    public TranferHistory getByCreditTransaction(String id, LocalDateTime limit){
+        Connection connection = ConnectionDB.getConnection();
+        TranferHistory result = null;
+        String sql = "SELECT * FROM transfer_history " +
+                "WHERE credit_transaction_id = ? ORDER BY  transfer_date DESC LIMIT 1";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setString(1, id);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if(resultSet.next()){
+                result = mapResultSet(resultSet);
+            }
+
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return result;
     }
 
     public List<TransferHistoryComponent> getHistory(LocalDateTime startDate, LocalDateTime endDate){
@@ -130,8 +153,10 @@ public class TransferHistoryCrudOperations implements CrudOperations<TranferHist
 
     private TranferHistory mapResultSet(ResultSet resultSet) throws SQLException {
         return TranferHistory.builder()
+                .transferHistoryId(resultSet.getString(TRANSFER_HISTORY_ID_COLUMN))
                 .debitTransactionId(resultSet.getString(DEBIT_TRANSACTION_ID_COLUMN))
                 .creditTransactionId(resultSet.getString(CREDIT_TRANSACTION_ID_COLUMN))
+                .tranferDate(resultSet.getTimestamp(TRANSFER_DATE_COLUMN).toLocalDateTime())
                 .build();
     }
 }
