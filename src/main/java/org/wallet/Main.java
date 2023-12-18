@@ -2,7 +2,9 @@ package org.wallet;
 
 import org.wallet.CrudOperations.*;
 import org.wallet.Models.Account;
+import org.wallet.Models.Transaction;
 import org.wallet.Models.Types.AccountType;
+import org.wallet.Models.Types.TransactionType;
 
 import java.time.LocalDateTime;
 
@@ -14,14 +16,19 @@ public class Main {
         var accountCrud = new AccountCrudOperations();
         var balanceCrud = new BalanceCrudOperations();
 
-        System.out.println(accountCrud.save(
-                new Account(
-                        "143342a0-7351-46d3-a216-54ac0e7533c7",
-                        "Compte courant",
-                        "6cc9845f-d195-4958-a8e8-6d4813879030",
-                        AccountType.CASH
-                )
+        System.out.println(balanceCrud.getAmountWithChangeRate(
+                "6f167b81-13dc-476d-a2a2-531b4b483cc0",
+                LocalDateTime.now()
         ));
+
+        /*
+        System.out.println(accountCrud.makeTransfer(
+                "143342a0-7351-46d3-a216-54ac0e7533c7",
+                "6f167b81-13dc-476d-a2a2-531b4b483cc0",
+                50d
+        ).toString());
+        */
+        //System.out.println(balanceCrud.getAmountByDate("143342a0-7351-46d3-a216-54ac0e7533c7", LocalDateTime.now()));
 
     }
 }
