@@ -14,22 +14,13 @@ import java.time.LocalDateTime;
 public class Main {
     public static void main(String[] args) {
         var accountCrud = new AccountCrudOperations();
-        var balanceCrud = new BalanceCrudOperations();
-
-        System.out.println(balanceCrud.getAmountWithChangeRate(
-                "6f167b81-13dc-476d-a2a2-531b4b483cc0",
-                LocalDateTime.now()
+        System.out.println(accountCrud.save(
+                Account.builder()
+                        .name("Compte courant")
+                        .currencyId("5389071c-4c8e-49aa-be10-db69c5db76cc")
+                        .accountType(AccountType.CASH)
+                        .build()
         ));
-
-        /*
-        System.out.println(accountCrud.makeTransfer(
-                "143342a0-7351-46d3-a216-54ac0e7533c7",
-                "6f167b81-13dc-476d-a2a2-531b4b483cc0",
-                50d
-        ).toString());
-        */
-        //System.out.println(balanceCrud.getAmountByDate("143342a0-7351-46d3-a216-54ac0e7533c7", LocalDateTime.now()));
-
     }
 }
 

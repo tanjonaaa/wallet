@@ -2,7 +2,7 @@ package org.wallet.CrudOperations;
 
 import org.wallet.Components.CurrencyComponent;
 import org.wallet.Models.Currency;
-import org.wallet.connectionDB.ConnectionDB;
+import org.wallet.ConnectionDB.ConnectionDB;
 
 import java.sql.*;
 import java.util.ArrayList;

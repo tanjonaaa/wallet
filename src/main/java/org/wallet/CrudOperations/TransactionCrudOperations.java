@@ -3,7 +3,7 @@ package org.wallet.CrudOperations;
 import org.wallet.Components.TransactionComponent;
 import org.wallet.Models.Transaction;
 import org.wallet.Models.Types.TransactionType;
-import org.wallet.connectionDB.ConnectionDB;
+import org.wallet.ConnectionDB.ConnectionDB;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
     public List<Transaction> findAll() {
         List<Transaction> transactions = new ArrayList<>();
         try {
-            Connection connection = org.wallet.connectionDB.ConnectionDB.getConnection();
+            Connection connection = org.wallet.ConnectionDB.ConnectionDB.getConnection();
             String sql = "SELECT * FROM transaction";
             Statement statement = connection.createStatement();
 
@@ -71,7 +71,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
 
 
         try {
-            Connection connection = org.wallet.connectionDB.ConnectionDB.getConnection();
+            Connection connection = org.wallet.ConnectionDB.ConnectionDB.getConnection();
 
             PreparedStatement statement = connection.prepareStatement(sql);
 
@@ -102,7 +102,7 @@ public class TransactionCrudOperations implements CrudOperations<Transaction> {
     public Transaction delete(Transaction toDelete) {
         Transaction deleted;
         try {
-            Connection connection = org.wallet.connectionDB.ConnectionDB.getConnection();
+            Connection connection = org.wallet.ConnectionDB.ConnectionDB.getConnection();
             String sql = "DELETE FROM transaction WHERE transaction_id = ? RETURNING *";
 
             PreparedStatement statement = connection.prepareStatement(sql);

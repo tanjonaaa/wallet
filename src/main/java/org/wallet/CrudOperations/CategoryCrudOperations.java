@@ -4,12 +4,11 @@ import org.wallet.Components.TransactionComponent;
 import org.wallet.Models.Category;
 import org.wallet.Models.CategoryAndAmount;
 import org.wallet.Models.Types.TransactionType;
-import org.wallet.connectionDB.ConnectionDB;
+import org.wallet.ConnectionDB.ConnectionDB;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

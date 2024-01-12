@@ -1,4 +1,4 @@
-package org.wallet.connectionDB;
+package org.wallet.ConnectionDB;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

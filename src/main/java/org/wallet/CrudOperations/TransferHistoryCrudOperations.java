@@ -1,10 +1,9 @@
 package org.wallet.CrudOperations;
 
 import org.wallet.Components.TransferHistoryComponent;
-import org.wallet.Models.Currency;
 import org.wallet.Models.TranferHistory;
 import org.wallet.Models.Transaction;
-import org.wallet.connectionDB.ConnectionDB;
+import org.wallet.ConnectionDB.ConnectionDB;
 
 import java.sql.*;
 import java.time.LocalDateTime;

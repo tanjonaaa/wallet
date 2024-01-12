@@ -1,7 +1,7 @@
 package org.wallet.CrudOperations;
 
 import org.wallet.Models.CurrencyValue;
-import org.wallet.connectionDB.ConnectionDB;
+import org.wallet.ConnectionDB.ConnectionDB;
 
 import java.sql.*;
 import java.time.LocalDate;
