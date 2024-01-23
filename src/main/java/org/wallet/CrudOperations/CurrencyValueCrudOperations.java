@@ -7,19 +7,10 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 
-public class CurrencyValueCrudOperations implements CrudOperations<CurrencyValue> {
-    @Override
-    public List<CurrencyValue> findAll() {
-        return null;
-    }
+public class CurrencyValueCrudOperations extends AutoCrudOperations<CurrencyValue> {
 
     @Override
     public List<CurrencyValue> saveAll(List<CurrencyValue> toSave) {
-        return null;
-    }
-
-    @Override
-    public CurrencyValue save(CurrencyValue toSave) {
         return null;
     }
 

@@ -2,7 +2,7 @@ package org.wallet.CrudOperations;
 
 import org.wallet.Components.TransactionComponent;
 import org.wallet.Models.Balance;
-import org.wallet.Models.TranferHistory;
+import org.wallet.Models.TransferHistory;
 import org.wallet.Models.Types.TransactionType;
 import org.wallet.ConnectionDB.ConnectionDB;
 
@@ -18,10 +18,6 @@ public class BalanceCrudOperations extends AutoCrudOperations<Balance> {
                          CurrencyCrudOperations currencyCrud = new CurrencyCrudOperations();
                          TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
                          CurrencyValueCrudOperations currencyValueCrud = new CurrencyValueCrudOperations();
-    public static final String BALANCE_ID_COLUMN = "balance_id";
-    public static final String TIMESTAMP_COLUMN = "balance_timestamp";
-    public static final String ACCOUNT_ID_COLUMN = "account_id";
-    public static final String AMOUNT_COLUMN = "amount";
 
     @Override
     public List<Balance> saveAll(List<Balance> toSave) {
@@ -130,7 +126,7 @@ public class BalanceCrudOperations extends AutoCrudOperations<Balance> {
 
 
         for (TransactionComponent income : incomes) {
-            TranferHistory transfer = transferHistoryCrud.getByCreditTransaction(income.getTransactionId(), income.getTransactionDate());
+            TransferHistory transfer = transferHistoryCrud.getByCreditTransaction(income.getTransactionId(), income.getTransactionDate());
             if(transfer != null){
                 String currency = currencyCrud.getCurrencyById(
                     accountCrud.getAccountById(

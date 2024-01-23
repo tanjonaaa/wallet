@@ -1,12 +1,14 @@
 package org.wallet.CrudOperations;
 
-
-
+import lombok.Getter;
 import org.wallet.Annotations.Column;
 import org.wallet.Annotations.CustomType;
 import org.wallet.Annotations.Id;
-import org.wallet.Annotations.Model;
+import org.wallet.Annotations.LocalDateTime;
 import org.wallet.ConnectionDB.ConnectionDB;
+import org.wallet.Utilities.AnnotationUtility;
+import org.wallet.Utilities.Enums.PgQuery;
+import org.wallet.Utilities.QueryFormatterUtility;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -16,62 +18,27 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public abstract class AutoCrudOperations<T> implements CrudOperations<T>{
-
-    private static final String FIND_ALL_QUERY = "select {columns} from \"%s\"";
-    private static final String SAVE_QUERY = "insert into \"%s\" ({columns}) values ({questionMarks}) returning *";
     private final Connection connection;
-
     public AutoCrudOperations() {
         this.connection = ConnectionDB.getConnection();
     }
 
     //Get the class of the generic parameter <T>
-    private Class<?> toClass(){
+    private Class<?> parameterToClass(){
         return ((Class<?>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
-    }
-
-    //Get the name of the corresponding Table with the value of Model annotation
-    // Model(table = ...)
-    private String getTableName(){
-        return this.toClass().getAnnotation(Model.class).table();
-    }
-
-    //Get all columns with the @Column annotation
-    private List<String> getColumns(boolean withId) {
-        Class<?> clazz = this.toClass();
-        List<Field> fields = List.of(clazz.getDeclaredFields());
-
-        return fields.stream()
-                .filter(field -> withId || !field.isAnnotationPresent(Id.class))
-                .filter(field -> field.isAnnotationPresent(Column.class))
-                .map(field -> field.getAnnotation(Column.class).name())
-                .toList();
-    }
-    
-    private String formatQuery(String query, String tableName, List<String> columns, boolean isPrepared){
-        String normalQuery = String.format(query, this.getTableName()).replace(
-                "{columns}", String.join(", ", columns)
-        );
-
-        String preparedQuery = String.format(query, this.getTableName()).replace(
-                "{columns}", String.join(", ", columns)
-        ).replace(
-                "{questionMarks}", String.join(", ", columns.stream()
-                        .map(column -> "?").toList()
-                )
-        );
-
-        return (isPrepared) ? preparedQuery : normalQuery;
     }
 
     @Override
     public List<T> findAll() {
-        /*
-         * Get the table name
-         * Get the columns list
-         * */
-        String query = formatQuery(FIND_ALL_QUERY, this.getTableName(), this.getColumns(true), false);
+        QueryFormatterUtility queryFormatter = QueryFormatterUtility.getInstance(
+                AnnotationUtility.getTableName(this.parameterToClass()),
+                AnnotationUtility.getColumns(this.parameterToClass())
+        );
+
+        String query = queryFormatter.formatQuery(PgQuery.SELECT);
+
         List<T> results = new ArrayList<>();
         try {
             Statement statement = this.getConnection().createStatement();
@@ -90,23 +57,52 @@ public abstract class AutoCrudOperations<T> implements CrudOperations<T>{
     @Override
     public T save(T t){
         T saved = null;
-        String query = formatQuery(SAVE_QUERY, this.getTableName(), this.getColumns(false), true);
-        List<String> columns = this.getColumns(false);
+        List<String> columns = AnnotationUtility.getColumns(this.parameterToClass());
+
+        QueryFormatterUtility queryFormatter = QueryFormatterUtility.getInstance(
+                AnnotationUtility.getTableName(this.parameterToClass()),
+                columns
+        );
+
+        Field id = AnnotationUtility.getField(
+          this.parameterToClass(),
+          Id.class
+        );
+        Method getId = AnnotationUtility.getMethod(
+                t.getClass(),
+                id.getAnnotation(Column.class).name(),
+                "getter"
+        );
+
         try {
+            String query = getId.invoke(t) == null ? queryFormatter.formatQuery(PgQuery.INSERT)
+                    : queryFormatter.formatQuery(PgQuery.UPDATE);
+
             PreparedStatement statement = this.connection.prepareStatement(query);
 
-            for (int i = 0; i < columns.size(); i++) {
+            for (int i = 1; i < columns.size(); i++) {
                 String columnName = columns.get(i);
-                Field field = this.getAnnotatedField(columnName);
-                Method getter = this.getMethod(columnName, "getter");
+                Field field = AnnotationUtility.getAnnotatedField(
+                        this.parameterToClass(),
+                        columnName);
+                Method getter = AnnotationUtility.getMethod(
+                        this.parameterToClass(),
+                        columnName ,
+                        "getter");
 
-                statement.setObject(i+1,
+                statement.setObject(i,
                         field.isAnnotationPresent(CustomType.class)
                         ? getter.invoke(t).toString() : getter.invoke(t)
                 );
             }
 
+            if(getId.invoke(t) != null){
+                statement.setObject(columns.size(),getId.invoke(t));
+            }
+
             statement.execute();
+
+            System.out.println(statement.toString());
 
             ResultSet resultSet = statement.getResultSet();
             resultSet.next();
@@ -119,18 +115,19 @@ public abstract class AutoCrudOperations<T> implements CrudOperations<T>{
         return saved;
     }
 
-    public Connection getConnection() {
-        return connection;
-    }
-
     protected T mapResultSet(ResultSet resultSet){
         Object modelObject = null;
-        List<String> columns = this.getColumns(true);
+        List<String> columns = AnnotationUtility.getColumns(this.parameterToClass());
         try {
-            modelObject = this.toClass().getDeclaredConstructor().newInstance();
+            modelObject = this.parameterToClass().getDeclaredConstructor().newInstance();
             for (String column : columns) {
-                Field field = this.getAnnotatedField(column);
-                Method setter = this.getMethod(column, "setter");
+                Field field = AnnotationUtility.getAnnotatedField(
+                        this.parameterToClass(),
+                        column);
+                Method setter = AnnotationUtility.getMethod(
+                        this.parameterToClass(),
+                        column,
+                        "setter");
 
 
                 if (field.isAnnotationPresent(CustomType.class)){
@@ -141,8 +138,12 @@ public abstract class AutoCrudOperations<T> implements CrudOperations<T>{
 
                     setter.invoke(modelObject, Enum.valueOf((Class<Enum>) (type), resultSet.getString(column)));
                 }else {
-
-                    setter.invoke(modelObject, resultSet.getObject(column));
+                    if(field.isAnnotationPresent(LocalDateTime.class))
+                    {
+                        setter.invoke(modelObject, ((Timestamp) resultSet.getObject(column)).toLocalDateTime());
+                    }else{
+                        setter.invoke(modelObject, resultSet.getObject(column));
+                    }
                 }
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException |
@@ -152,32 +153,4 @@ public abstract class AutoCrudOperations<T> implements CrudOperations<T>{
         return (T) modelObject;
     }
 
-    private Method getMethod(String columnName, String methodType){
-
-        Field field = this.getAnnotatedField(columnName);
-
-        Class<?> parameterType = field.getType();
-
-        try {
-            return  methodType.equals("setter") ?
-                    this.toClass().getMethod("set"+this.ucFirst(field.getName()), parameterType)
-                    : this.toClass().getMethod("get"+this.ucFirst(field.getName()))
-                    ;
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String ucFirst(String entry){
-        return entry.substring(0, 1).toUpperCase() + entry.substring(1);
-    }
-
-    private Field getAnnotatedField(String columnName){
-        List<Field> fields = List.of(this.toClass().getDeclaredFields());
-
-        return  fields.stream()
-                .filter(field -> field.isAnnotationPresent(Column.class))
-                .filter(field -> field.getAnnotation(Column.class).name().equals(columnName))
-                .toList().get(0);
-    }
 }

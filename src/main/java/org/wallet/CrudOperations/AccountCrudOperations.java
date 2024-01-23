@@ -4,7 +4,7 @@ import org.wallet.Components.AccountComponent;
 import org.wallet.Components.BalanceComponent;
 import org.wallet.Models.Account;
 import org.wallet.Models.Balance;
-import org.wallet.Models.TranferHistory;
+import org.wallet.Models.TransferHistory;
 import org.wallet.Models.Transaction;
 import org.wallet.Models.Types.TransactionType;
 import org.wallet.ConnectionDB.ConnectionDB;
@@ -20,10 +20,6 @@ public class AccountCrudOperations extends AutoCrudOperations<Account> {
     private static final TransferHistoryCrudOperations transferHistoryCrud = new TransferHistoryCrudOperations();
     private static final CategoryCrudOperations categoryCrud = new CategoryCrudOperations();
     private static final BalanceCrudOperations balanceCrud = new BalanceCrudOperations();
-    public static final String ACCOUNT_ID_COLUMN = "account_id";
-    public static final String ACCOUNT_NAME_COLUMN = "name";
-    public static final String CURRENCY_ID_COLUMN = "currency_id";
-    public static final String ACCOUNT_TYPE_COLUMN = "account_type";
 
     @Override
     public List<Account> saveAll(List<Account> toSave) {
@@ -138,7 +134,7 @@ public class AccountCrudOperations extends AutoCrudOperations<Account> {
         );
     }
 
-    public TranferHistory makeTransfer(String debitAccount, String creditAccount, Double amount){
+    public TransferHistory makeTransfer(String debitAccount, String creditAccount, Double amount){
         List<String> ids = Arrays.asList(
                 categoryCrud.getCategoryId("Transfer", TransactionType.INCOME),
                 categoryCrud.getCategoryId("Transfer", TransactionType.EXPENSE)
@@ -165,7 +161,7 @@ public class AccountCrudOperations extends AutoCrudOperations<Account> {
             Transaction savedCredit = transactionCrud.save(creditTransaction);
 
             return transferHistoryCrud.save(
-                    TranferHistory.builder()
+                    TransferHistory.builder()
                             .debitTransactionId(savedDebit.getTransactionId())
                             .creditTransactionId(savedCredit.getTransactionId())
                             .build()

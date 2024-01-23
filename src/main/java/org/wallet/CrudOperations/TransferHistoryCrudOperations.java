@@ -1,7 +1,7 @@
 package org.wallet.CrudOperations;
 
 import org.wallet.Components.TransferHistoryComponent;
-import org.wallet.Models.TranferHistory;
+import org.wallet.Models.TransferHistory;
 import org.wallet.Models.Transaction;
 import org.wallet.ConnectionDB.ConnectionDB;
 
@@ -10,26 +10,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransferHistoryCrudOperations implements CrudOperations<TranferHistory> {
+public class TransferHistoryCrudOperations extends AutoCrudOperations<TransferHistory> {
     private static final AccountCrudOperations accountCrud = new AccountCrudOperations();
     private static final TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
-    public static final String TRANSFER_HISTORY_ID_COLUMN = "id";
-    public static final String DEBIT_TRANSACTION_ID_COLUMN = "debit_transaction_id";
-    public static final String CREDIT_TRANSACTION_ID_COLUMN = "credit_transaction_id";
-    public static final String TRANSFER_DATE_COLUMN = "transfer_date";
+
     @Override
-    public List<TranferHistory> findAll() {
+    public List<TransferHistory> saveAll(List<TransferHistory> toSave) {
         return null;
     }
 
     @Override
-    public List<TranferHistory> saveAll(List<TranferHistory> toSave) {
-        return null;
-    }
-
-    @Override
-    public TranferHistory save(TranferHistory toSave) {
-        TranferHistory savedTransferHistory;
+    public TransferHistory save(TransferHistory toSave) {
+        TransferHistory savedTransferHistory;
         Connection connection = ConnectionDB.getConnection();
 
         String sql;
@@ -70,13 +62,13 @@ public class TransferHistoryCrudOperations implements CrudOperations<TranferHist
     }
 
     @Override
-    public TranferHistory delete(TranferHistory toDelete) {
+    public TransferHistory delete(TransferHistory toDelete) {
         return null;
     }
 
-    public TranferHistory getByCreditTransaction(String id, LocalDateTime limit){
+    public TransferHistory getByCreditTransaction(String id, LocalDateTime limit){
         Connection connection = ConnectionDB.getConnection();
-        TranferHistory result = null;
+        TransferHistory result = null;
         String sql = "SELECT * FROM transfer_history " +
                 "WHERE credit_transaction_id = ? ORDER BY  transfer_date DESC LIMIT 1";
 
@@ -115,7 +107,7 @@ public class TransferHistoryCrudOperations implements CrudOperations<TranferHist
                 ResultSet resultSet = statement.executeQuery();
 
                 while (resultSet.next()){
-                    TranferHistory transferHistory = mapResultSet(resultSet);
+                    TransferHistory transferHistory = mapResultSet(resultSet);
 
                     Transaction debitTransaction = transactionCrud.getById(
                             transferHistory.getDebitTransactionId()
@@ -148,14 +140,5 @@ public class TransferHistoryCrudOperations implements CrudOperations<TranferHist
         }else {
             return null;
         }
-    }
-
-    private TranferHistory mapResultSet(ResultSet resultSet) throws SQLException {
-        return TranferHistory.builder()
-                .transferHistoryId(resultSet.getString(TRANSFER_HISTORY_ID_COLUMN))
-                .debitTransactionId(resultSet.getString(DEBIT_TRANSACTION_ID_COLUMN))
-                .creditTransactionId(resultSet.getString(CREDIT_TRANSACTION_ID_COLUMN))
-                .tranferDate(resultSet.getTimestamp(TRANSFER_DATE_COLUMN).toLocalDateTime())
-                .build();
     }
 }

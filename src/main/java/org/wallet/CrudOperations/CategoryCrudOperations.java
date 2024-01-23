@@ -13,22 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class CategoryCrudOperations implements CrudOperations<Category>{
+public class CategoryCrudOperations extends AutoCrudOperations<Category>{
     TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
-    @Override
-    public List<Category> findAll() {
-        return null;
-    }
-
     @Override
     public List<Category> saveAll(List<Category> toSave) {
         return null;
     }
 
-    @Override
-    public Category save(Category toSave) {
-        return null;
-    }
 
     @Override
     public Category delete(Category toDelete) {
