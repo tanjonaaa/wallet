@@ -1,1 +1,0 @@
-create type currency_code as enum ('EUR', 'MGA');
