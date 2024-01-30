@@ -5,31 +5,31 @@ import org.wallet.Models.Account;
 import org.wallet.Models.Transaction;
 import org.wallet.Models.Types.AccountType;
 import org.wallet.Models.Types.TransactionType;
+import org.wallet.Utilities.Enums.PgQuery;
+import org.wallet.Utilities.QueryFormatterUtility;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
     public static void main(String[] args) {
-        var accountCrud = new AccountCrudOperations();
-        var balanceCrud = new BalanceCrudOperations();
+        List<CrudOperations<?>> crudOperations = List.of(
+                new AccountCrudOperations(),
+                new BalanceCrudOperations(),
+                new CategoryCrudOperations(),
+                new CurrencyCrudOperations(),
+                new TransferHistoryCrudOperations(),
+                new TransactionCrudOperations(),
+                new CurrencyValueCrudOperations()
+        );
 
-        System.out.println(balanceCrud.getAmountWithChangeRate(
-                "6f167b81-13dc-476d-a2a2-531b4b483cc0",
-                LocalDateTime.now()
-        ));
-
-        /*
-        System.out.println(accountCrud.makeTransfer(
-                "143342a0-7351-46d3-a216-54ac0e7533c7",
-                "6f167b81-13dc-476d-a2a2-531b4b483cc0",
-                50d
-        ).toString());
-        */
-        //System.out.println(balanceCrud.getAmountByDate("143342a0-7351-46d3-a216-54ac0e7533c7", LocalDateTime.now()));
-
+        crudOperations.forEach(
+                crudOperation -> System.out.println(crudOperation.findAll())
+        );
     }
 }
 

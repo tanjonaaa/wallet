@@ -2,40 +2,13 @@ package org.wallet.CrudOperations;
 
 import org.wallet.Components.CurrencyComponent;
 import org.wallet.Models.Currency;
-import org.wallet.connectionDB.ConnectionDB;
+import org.wallet.ConnectionDB.ConnectionDB;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CurrencyCrudOperations implements CrudOperations<Currency> {
-    public static final String CURRENCY_ID_COLUMN = "currency_id";
-    public static final String NAME_COLUMN = "name";
-    public static final String CODE_COLUMN = "currency_code";
-    @Override
-    public List<Currency> findAll() {
-        List<Currency> currencies = new ArrayList<>();
-        Connection connection = ConnectionDB.getConnection();
-        try {
-            String sql = "SELECT * FROM \"currency\"";
-            Statement statement = connection.createStatement();
-
-            ResultSet resultSet = statement.executeQuery(sql);
-
-            while(resultSet.next()){
-                Currency currency = this.mapResultSet(resultSet);
-
-                currencies.add(currency);
-            }
-
-            resultSet.close();
-            statement.close();
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return currencies;
-    }
+public class CurrencyCrudOperations extends AutoCrudOperations<Currency> {
 
     @Override
     public List<Currency> saveAll(List<Currency> toSave) {
@@ -49,47 +22,6 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
         return savedCurrencies;
     }
 
-    @Override
-    public Currency save(Currency toSave) {
-        Currency savedCurrency;
-        Connection connection = ConnectionDB.getConnection();
-
-        String sql;
-
-        if(toSave.getCurrencyId() == null){
-            sql = "INSERT INTO \"currency\" (name, currency_code) " +
-                    "VALUES(?, CAST(? AS currency_code)) RETURNING *";
-        }else{
-            sql = "UPDATE \"currency\" " +
-                    "SET name = ?, currency_code = CAST(? AS currency_code) " +
-                    "WHERE currency_id = ? RETURNING *";
-        }
-
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-
-            statement.setString(1, toSave.getName());
-            statement.setString(2, toSave.getCurrencyCode());
-
-            if(toSave.getCurrencyId() != null){
-                statement.setString(3, toSave.getCurrencyId());
-            }
-
-            statement.execute();
-
-            ResultSet resultSet = statement.getResultSet();
-            resultSet.next();
-            savedCurrency = mapResultSet(resultSet);
-
-            statement.close();
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        return savedCurrency;
-    }
 
     @Override
     public Currency delete(Currency toDelete) {
@@ -148,12 +80,4 @@ public class CurrencyCrudOperations implements CrudOperations<Currency> {
         );
     }
 
-    private Currency mapResultSet(ResultSet resultSet) throws SQLException {
-        Currency currency = new Currency();
-        currency.setCurrencyId(resultSet.getString(CURRENCY_ID_COLUMN));
-        currency.setName(resultSet.getString(NAME_COLUMN));
-        currency.setCurrencyCode(resultSet.getString(CODE_COLUMN));
-
-        return currency;
-    }
 }
