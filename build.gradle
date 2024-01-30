@@ -17,6 +17,10 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation group: 'org.springframework', name: 'spring-jdbc', version: '6.1.2'
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '3.2.0'
+	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

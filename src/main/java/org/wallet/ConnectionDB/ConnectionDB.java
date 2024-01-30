@@ -1,39 +1,21 @@
 package org.wallet.ConnectionDB;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import javax.sql.DataSource;
+
+@Configuration
 public class ConnectionDB {
-    private static Connection connection;
+    @Bean
+    public DataSource dataSource(){
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl(System.getenv("DB_URL"));
+        dataSource.setUsername(System.getenv("DB_USER"));
+        dataSource.setPassword(System.getenv("DB_PASS"));
 
-    public static Connection getConnection(){
-        try {
-            if(connection == null || connection.isClosed()){
-                String url = System.getenv("DB_URL");
-                String username = System.getenv("DB_USER");
-                String password = System.getenv("DB_PASS");
-                try{
-                    connection = DriverManager.getConnection(
-                            url,username,password
-                    );
-                }catch(SQLException e){
-                    e.printStackTrace();
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return connection;
-    }
-
-    public static void closeConnection(){
-        try {
-            if(connection != null && !connection.isClosed()){
-                connection.close();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return dataSource;
     }
 }
