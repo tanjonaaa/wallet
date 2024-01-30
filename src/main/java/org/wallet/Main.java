@@ -13,13 +13,13 @@ import java.time.LocalDateTime;
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
     public static void main(String[] args) {
-        var accountCrud = new AccountCrudOperations();
+       /* var accountCrud = new AccountCrudOperations();
         var balanceCrud = new BalanceCrudOperations();
 
         System.out.println(balanceCrud.getAmountWithChangeRate(
                 "6f167b81-13dc-476d-a2a2-531b4b483cc0",
                 LocalDateTime.now()
-        ));
+        ));*/
 
         /*
         System.out.println(accountCrud.makeTransfer(

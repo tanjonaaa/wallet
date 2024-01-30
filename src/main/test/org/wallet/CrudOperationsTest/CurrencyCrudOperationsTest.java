@@ -29,7 +29,7 @@ public class CurrencyCrudOperationsTest {
     public void testSave() {
         Currency currency = new Currency();
         currency.setName("TestCurrency");
-        currency.setCode("MGA");
+        currency.setCurrencyCode("MGA");
 
         // Test save operation
         Currency savedCurrency = crudOperations.save(currency);
@@ -38,7 +38,7 @@ public class CurrencyCrudOperationsTest {
 
     @Test
     public void testSaveWhenProvidingId() {
-        Currency currency = new Currency("b123533a-2b0d-4ce5-81a2-caf078ba35fe", "Euro", "EUR");
+        Currency currency = new Currency("b123533a-285d-4ce5-as665-caf078ba35fe", "DOLLAR", "U$");
         Currency savedCurrency = crudOperations.save(currency);
         Assertions.assertEquals(savedCurrency.getCurrencyId(), currency.getCurrencyId()); // Ensure that the saved currency has an ID
     }
@@ -56,11 +56,11 @@ public class CurrencyCrudOperationsTest {
         List<Currency> currenciesToSave = new ArrayList<>();
         Currency currency1 = new Currency();
         currency1.setName("TestCurrency1");
-        currency1.setCode("MGA");
+        currency1.setCurrencyCode("MGA");
 
         Currency currency2 = new Currency();
         currency2.setName("TestCurrency2");
-        currency2.setCode("MGA");
+        currency2.setCurrencyCode("MGA");
 
         currenciesToSave.add(currency1);
         currenciesToSave.add(currency2);
@@ -76,10 +76,12 @@ public class CurrencyCrudOperationsTest {
     public void testDelete() {
         Currency currency = new Currency();
         currency.setName("TestCurrency");
-        currency.setCode("MGA");
+        currency.setCurrencyId("DUGAUZGDAUZ-dajdbad-5q45q");
+        currency.setCurrencyCode("MGA");
 
         // Save the currency first
         Currency savedCurrency = crudOperations.save(currency);
+
 
         // Test delete operation
         Currency deletedCurrency = crudOperations.delete(savedCurrency);
