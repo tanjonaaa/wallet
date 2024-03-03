@@ -1,5 +1,6 @@
 package org.wallet.CrudOperations;
 
+import org.springframework.stereotype.Repository;
 import org.wallet.Components.AccountComponent;
 import org.wallet.Components.BalanceComponent;
 import org.wallet.Models.Account;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Repository
 public class AccountCrudOperations extends AutoCrudOperations<Account> {
     private static final TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
     private static final TransferHistoryCrudOperations transferHistoryCrud = new TransferHistoryCrudOperations();
