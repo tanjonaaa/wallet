@@ -173,7 +173,7 @@ public class AccountCrudOperations extends AutoCrudOperations<Account> {
         }
     }
 
-    private Double getExchangeRate(LocalDateTime transactionTimestamp, String calculationType) {
+    public Double getExchangeRate(LocalDateTime transactionTimestamp, String calculationType) {
         Connection connection = ConnectionDB.getConnection();
         String sql;
 
