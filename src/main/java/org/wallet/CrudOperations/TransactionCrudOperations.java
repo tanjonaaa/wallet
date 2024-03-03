@@ -1,5 +1,6 @@
 package org.wallet.CrudOperations;
 
+import org.springframework.stereotype.Repository;
 import org.wallet.Components.TransactionComponent;
 import org.wallet.Models.Transaction;
 import org.wallet.Models.Types.TransactionType;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class TransactionCrudOperations extends AutoCrudOperations<Transaction> {
 
     @Override

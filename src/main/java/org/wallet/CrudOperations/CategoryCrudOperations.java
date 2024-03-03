@@ -1,5 +1,6 @@
 package org.wallet.CrudOperations;
 
+import org.springframework.stereotype.Service;
 import org.wallet.Components.TransactionComponent;
 import org.wallet.Models.Category;
 import org.wallet.Models.CategoryAndAmount;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Service
 public class CategoryCrudOperations extends AutoCrudOperations<Category>{
     TransactionCrudOperations transactionCrud = new TransactionCrudOperations();
     @Override
@@ -25,10 +27,6 @@ public class CategoryCrudOperations extends AutoCrudOperations<Category>{
     public Category delete(Category toDelete) {
         return null;
     }
-
-    /*private boolean checkDateIsBetween(LocalDate startDate, LocalDate endDate){
-        return
-    }*/
 
     public String getCategoryId(String name, TransactionType type){
         Connection connection = ConnectionDB.getConnection();

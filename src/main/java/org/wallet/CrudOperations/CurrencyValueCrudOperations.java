@@ -1,5 +1,6 @@
 package org.wallet.CrudOperations;
 
+import org.springframework.stereotype.Repository;
 import org.wallet.Models.CurrencyValue;
 import org.wallet.ConnectionDB.ConnectionDB;
 
@@ -7,6 +8,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
 public class CurrencyValueCrudOperations extends AutoCrudOperations<CurrencyValue> {
 
     @Override
