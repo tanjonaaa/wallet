@@ -102,8 +102,6 @@ public abstract class AutoCrudOperations<T> implements CrudOperations<T>{
 
             statement.execute();
 
-            System.out.println(statement.toString());
-
             ResultSet resultSet = statement.getResultSet();
             resultSet.next();
             saved = mapResultSet(resultSet);
